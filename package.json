@@ -1,0 +1,30 @@
+{
+  "name": "wine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack --watch --mode=development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeanha124/WineZ.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeanha124/WineZ/issues"
+  },
+  "homepage": "https://github.com/jeanha124/WineZ#readme",
+  "dependencies": {
+    "@babel/core": "^7.5.4",
+    "babel-loader": "^8.0.6",
+    "d3-geo": "^1.11.6",
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.6"
+  }
+}
