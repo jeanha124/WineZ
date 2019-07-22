@@ -24,6 +24,8 @@
     "@babel/core": "^7.5.4",
     "babel-loader": "^8.0.6",
     "d3-geo": "^1.11.6",
+    "d3-queue": "^3.0.7",
+    "d3-selection": "^1.4.0",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6"
   }

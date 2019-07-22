@@ -3,14 +3,63 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Page Title</title>
+  <title>Wine in the USA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <!-- <script src="https://maps.google.com/maps/api/js?sensor=true"></script> -->
+  <script src="https://d3js.org/topojson.v2.min.js"></script>
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+  <script src="http://d3js.org/d3-geo-projection.v2.min.js"></script>
+  <style>
+    .state-borders {
+      
+    }
+  </style>
 </head>
 <body>
+  <header>Wine in the USA</header>
   <div id="map"></div>
   
-  <script src="bundle.js"></script>
+  <script>
+    let margin = {top: 50, left: 50, right: 50, bottom: 50},
+    height = 700 - margin.top - margin.bottom,
+    width = 1000 - margin.left - margin.right;
+
+    let svg = d3.select("#map")
+                .append("svg")
+                .attr("height", height + margin.top + margin.bottom)
+                .attr("width", width + margin.left + margin.right)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+                       
+    let path = d3.geoPath()
+                 
+
+    d3.json("https://d3js.org/us-10m.v1.json", function(error, us){
+      if (error) throw error;
+
+      svg.append("g")
+         .attr("class", "states")
+         .selectAll("path")
+         .data(topojson.feature(us, us.objects.states).features)
+         .enter().append("path")
+         .attr("d", path);
+      svg.append("path")
+         .attr("class", "state-borders")
+         .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));   
+    });
+
+  </script>
+  <footer style='width: 100%; background: red; position: absolute; bottom: 0;'>
+    <div>
+      <a style='color: white;' href='https://jeanwooha.me'>Portfolio</a>
+      <a style='color: white;' href='https://linkedin.com/in/jeanha124'>LinkedIn</a>
+      <a style='color: white;' href='https://github.com/jeanha124'>Github</a>
+    </div>
+  </footer>
 </body>
 </html>
