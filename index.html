@@ -12,13 +12,24 @@
   <script src="http://d3js.org/queue.v1.min.js"></script>
   <script src="http://d3js.org/d3-geo-projection.v2.min.js"></script>
   <style>
+    header {
+      text-align: center;
+    }
+    .states :hover {
+      fill: #722f37;
+    }
     .state-borders {
+      fill: none;
       stroke-width: 1px;
+    }
+    footer {
+      font: 20px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <header>Wine in the USA</header>
+  <header><h1>Wine in the USA</h1></header>
   <div id="map"></div>
   
   <script>
@@ -38,7 +49,10 @@
                        
     let path = d3.geoPath()
                  
-
+    let data = d3.csv("wine-data.csv", (d) => {
+        console.log(d);
+    });
+    console.log(data);
     d3.json("https://d3js.org/us-10m.v1.json", function(error, us){
       if (error) throw error;
 
@@ -50,16 +64,15 @@
          .attr("d", path);
       svg.append("path")
          .attr("class", "state-borders")
-         .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));   
+         .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))); 
+         
     });
 
   </script>
   <footer style='width: 100%; background: red; position: absolute; bottom: 0;'>
-    <div>
       <a style='color: white;' href='https://jeanwooha.me'>Portfolio</a>
-      <a style='color: white;' href='https://linkedin.com/in/jeanha124'>LinkedIn</a>
+      <a style='color: white;' href='https://linkedin.com/in/jeanha124'><img ></a>
       <a style='color: white;' href='https://github.com/jeanha124'>Github</a>
-    </div>
   </footer>
 </body>
 </html>
