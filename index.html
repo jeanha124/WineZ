@@ -27,6 +27,9 @@
       fill: none;
       stroke-width: 1px;
     }
+    .circle {
+      fill: green;
+    }
     footer {
       font: 20px;
       text-align: center;
@@ -296,13 +299,13 @@
          .attr("class", "state-borders")
          .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))); 
       svg.selectAll('circle')
-         .data(data.features).enter()
+         .data(data).enter()
          .append('circle')
-         .attr('cx', function(d){ return projection(d.lonlat)[0]})
-         .attr('cx', function(d){ return projection(d.lonlat)[1]})
-         .attr('r', '10px')
-         .attr('fill', 'green')
-           
+         .attr('cx', function(d) { return projection(d.lonlat)[0]})
+         .attr('cy', function(d) { return projection(d.lonlat)[1]})
+         .attr('r', 5)
+         .fill('green')
+  
     });
 
   </script>
