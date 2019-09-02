@@ -258,19 +258,21 @@
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
+    let states = svg.append('g')
+                  .attr('class', 'states');
+    let areas = svg.append('g')
+                  .attr('class', 'areas');              
     let projection = d3.geoAlbersUsa()
         .translate([width/2, height/2])
         .scale(1000)
 
     let path = d3.geoPath().projection(projection)    
     
-    d3.json("/us-states.json", function(error, us){
+    d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/us-states.json", function(error, us){
       if (error) throw error;
 
-      svg.append("g")
-        .attr("class", "states")
-        .selectAll("path")
+      
+      states.selectAll("path")
         .data(topojson.feature(us, us.objects.states).features)
         .enter().append("path")
         .attr("d", path);
@@ -298,20 +300,23 @@
         });
         console.log(data);
 
-        svg.append('g')
-          .attr('class', 'markers')
-          .selectAll('areas')
+        let areas = d3.select('.areas').selectAll('circle')
           .data(data).enter()
           .append('circle')
-          .attr('r', 5)
-          .attr('cx', function (d) {
-          let coords = projection([d.long, d.lat])
-          return coords[0]
-          })
           .attr('cy', function (d) {
-          let coords = projection([d.long, d.lat])
-          return coords[1]
+            if (d.long !== null || d.lat !== null) {
+              return projection([d.long, d.lat])[1];
+            }
           })
+          .attr('cx', function (d) {
+            if (d.long !== null || d.lat !== null) {
+              return projection([d.long, d.lat])[0];
+            }
+          })
+          .attr('id', function (d) {
+            return d.title;
+          })
+          .attr('r', 5)
           .style('fill', 'green');
         });
 
