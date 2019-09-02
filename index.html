@@ -37,7 +37,41 @@
 <body>
   <header><h1>Wine in the USA</h1></header>
   <div id="map"></div>
-  
+  <div id="wine_filters">
+    <span>View Wines according to - - -</span>
+    <div id="top-wine-selector">
+      <span>Please select a top choice: </span>
+      <select id="top-selector">
+        <option value="top-points">Show All</option>
+        <option value="5">Top 5</option>
+        <option value="10">Top 10</option>
+        <option value="15">Top 15</option>
+        <option value="20">Top 20</option>
+        <option value="50">Top 50</option>
+        <option value="100">Top 100</option>
+      </select>
+    </div>
+    <div id="bottom-wine-selector">
+      <span>Please select a low choice: </span>
+        <select id="bottom-selector">
+          <option value="low-points">Show All</option>
+          <option value="5">Bottom 5</option>
+          <option value="10">Bottom 10</option>
+          <option value="15">Bottom 15</option>
+          <option value="20">Bottom 20</option>
+          <option value="25">Bottom 25</option>
+          <option value="30">Bottom 30</option>
+        </select>
+    </div>
+    <div id="expense-wine-selector">
+      <span>Please select an expense: </span>
+        <select id="expense-selector">
+          <option value="expense-price">Show All</option>
+          <option value="Expensive">Expensive</option>
+          <option value="Budget Friendly">Budget</option>
+        </select>
+    </div>
+  </div>
   <script>      
     
     let longlat = [{
@@ -248,8 +282,8 @@
     ];   
     
     let margin = {top: 50, left: 50, right: 50, bottom: 50},
-    height = 700 - margin.top - margin.bottom,
-    width = 1000 - margin.left - margin.right;
+    height = 500 - margin.top - margin.bottom,
+    width = 900 - margin.left - margin.right;
 
     let svg = d3.select("#map")
         .append("svg")
