@@ -38,22 +38,7 @@
   <header><h1>Wine in the USA</h1></header>
   <div id="map"></div>
   
-  <script>
-    let margin = {top: 50, left: 50, right: 50, bottom: 50},
-    height = 700 - margin.top - margin.bottom,
-    width = 1000 - margin.left - margin.right;
-
-    let svg = d3.select("#map")
-                .append("svg")
-                .attr("height", height + margin.top + margin.bottom)
-                .attr("width", width + margin.left + margin.right)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    let projection = d3.geoAlbersUsa().translate([width/2, height/2]).scale(1000)
-    let path = d3.geoPath().projection(projection)
-                 
-          
+  <script>      
     
     let longlat = [{
       name: 'Alabama',
@@ -262,47 +247,25 @@
     }
     ];   
     
-    let data = d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", (d) => {
-          return {
-            title: d.title,
-            description: d.description,
-            variety: d.variety,
-            winery: d.winery,
-            province: d.province,
-            points: d.points,
-            price: d.price
-        };
-    }, function (data) {
-      data.forEach(function(d){
-      let result = longlat.filter(function(lonlat){
-      return lonlat.name === d.province;
-      });
-      d.long = (result[0] !== undefined) ? result[0].long : null;
-      d.lat = (result[0] !== undefined) ? result[0].lat : null;
-      });
-      console.log(data);
+    let margin = {top: 50, left: 50, right: 50, bottom: 50},
+    height = 700 - margin.top - margin.bottom,
+    width = 1000 - margin.left - margin.right;
 
-      svg.append('g')
-        .attr('class', 'markers')
-        .selectAll('areas')
-        .data(data).enter()
-        .append('circle')
-        .attr('r', 5)
-        .attr('cx', function (d) {
-          let coords = projection([d.long, d.lat])
-          return coords[0]
-        })
-        .attr('cy', function (d) {
-          let coords = projection([d.long, d.lat])
-          return coords[1]
-        })
-        .style('fill', 'green');
-    });
+    let svg = d3.select("#map")
+        .append("svg")
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width + margin.left + margin.right)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
+    let projection = d3.geoAlbersUsa()
+        .translate([width/2, height/2])
+        .scale(1000)
+
+    let path = d3.geoPath().projection(projection)    
     
-
-    d3.json("https://d3js.org/us-10m.v1.json", function(error, us){
+    d3.json("/us-states.json", function(error, us){
       if (error) throw error;
 
       svg.append("g")
@@ -311,13 +274,53 @@
         .data(topojson.feature(us, us.objects.states).features)
         .enter().append("path")
         .attr("d", path);
-      svg.append("path")
+        svg.append("path")
         .attr("class", "state-borders")
-        .datum(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; }))
-        .attr('d', path); 
-      
-  
+        .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));
+
+      d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", (d) => {
+        return {
+          title: d.title,
+          description: d.description,
+          variety: d.variety,
+          winery: d.winery,
+          province: d.province,
+          points: d.points,
+          price: d.price
+        };
+      }, function (data) {
+        data.forEach(function(d){
+          let result = longlat.filter(function(lonlat){
+          return lonlat.name === d.province;
+          });
+        d.long = (result[0] !== undefined) ? result[0].long : null;
+        d.lat = (result[0] !== undefined) ? result[0].lat : null;
+        });
+        console.log(data);
+
+        svg.append('g')
+          .attr('class', 'markers')
+          .selectAll('areas')
+          .data(data).enter()
+          .append('circle')
+          .attr('r', 5)
+          .attr('cx', function (d) {
+          let coords = projection([d.long, d.lat])
+          return coords[0]
+          })
+          .attr('cy', function (d) {
+          let coords = projection([d.long, d.lat])
+          return coords[1]
+          })
+          .style('fill', 'green');
+        });
+
+
     });
+
+    
+
+    
 
   </script>
   <footer style='width: 100%; background: red; position: absolute; bottom: 0;'>
