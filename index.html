@@ -27,9 +27,7 @@
       fill: none;
       stroke-width: 1px;
     }
-    .circle {
-      fill: green;
-    }
+    
     footer {
       font: 20px;
       text-align: center;
@@ -52,8 +50,8 @@
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    let projection = d3.geoAlbersUsa()
-    let path = d3.geoPath()
+    let projection = d3.geoAlbersUsa().translate([width/2, height/2]).scale(1000)
+    let path = d3.geoPath().projection(projection)
                  
           
     
@@ -284,7 +282,9 @@
       });
       console.log(data);
 
-      svg.selectAll('areas')
+      svg.append('g')
+        .attr('class', 'markers')
+        .selectAll('areas')
         .data(data).enter()
         .append('circle')
         .attr('r', 5)
@@ -302,18 +302,19 @@
 
     
 
-    d3.json("https://d3js.org/us-10m.v1.json", function(error, us){
+    d3.json("/gz_2010_us_040_00_500k.json", function(error, us){
       if (error) throw error;
 
       svg.append("g")
-         .attr("class", "states")
-         .selectAll("path")
-         .data(topojson.feature(us, us.objects.states).features)
-         .enter().append("path")
-         .attr("d", path);
+        .attr("class", "states")
+        .selectAll("path")
+        .data(topojson.feature(us, us.objects.states).features)
+        .enter().append("path")
+        .attr("d", path);
       svg.append("path")
-         .attr("class", "state-borders")
-         .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))); 
+        .attr("class", "state-borders")
+        .datum(topojson.mesh(us, us.objects.states, function (a, b) { return a !== b; }))
+        .attr('d', path); 
       
   
     });
