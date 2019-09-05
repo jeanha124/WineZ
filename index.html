@@ -32,6 +32,14 @@
       font: 20px;
       text-align: center;
     }
+
+    #wine_info {
+      border: 1px solid black;
+      position: relative;
+      padding: 8px;
+      top: 20px;
+      width: 300px;
+    }
   </style>
 </head>
 <body>
@@ -41,36 +49,19 @@
     <span>View Wines according to - - -</span>
     <div id="top-wine-selector">
       <span>Please select a top choice: </span>
-      <select id="top-selector">
-        <option value="top-points">Show All</option>
-        <option value="5">Top 5</option>
-        <option value="10">Top 10</option>
-        <option value="15">Top 15</option>
-        <option value="20">Top 20</option>
-        <option value="50">Top 50</option>
-        <option value="100">Top 100</option>
-      </select>
     </div>
     <div id="bottom-wine-selector">
       <span>Please select a low choice: </span>
-        <select id="bottom-selector">
-          <option value="low-points">Show All</option>
-          <option value="5">Bottom 5</option>
-          <option value="10">Bottom 10</option>
-          <option value="15">Bottom 15</option>
-          <option value="20">Bottom 20</option>
-          <option value="25">Bottom 25</option>
-          <option value="30">Bottom 30</option>
-        </select>
     </div>
     <div id="expense-wine-selector">
       <span>Please select an expense: </span>
-        <select id="expense-selector">
-          <option value="expense-price">Show All</option>
-          <option value="Expensive">Expensive</option>
-          <option value="Budget Friendly">Budget</option>
-        </select>
     </div>
+  </div>
+  <div id="wine_info">
+    Name: <span id="title" class="info"></span><br>
+    Description: <span id="description" class="info"></span><br>
+    Variety: <span id="variety" class="info"></span><br>
+    Price: <span id="price" class="info"></span><br>
   </div>
   <script>      
     
@@ -313,7 +304,7 @@
         svg.append("path")
         .attr("class", "state-borders")
         .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));
-
+        
       d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", (d) => {
         return {
           title: d.title,
@@ -352,8 +343,50 @@
           })
           .attr('r', 5)
           .style('fill', 'green');
+
+          //data groups
+          let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
+          bottom_wine = ["all", "5", "10", "15", "20", "50", "100"],
+          expense = ["all", "Expensive", "Budget"];
+
+          let dropdown1 = d3.select('#top-wine-selector')
+          .append('select')
+          .selectAll('myOptions')
+          .data(top_wine)
+          .enter()
+          .append('option')
+          .text(function (d) { return d})
+          .attr('value', function (d) { return d });
+          let dropdown2 = d3.select('#bottom-wine-selector')
+          .append('select')
+          .selectAll('myOptions')
+          .data(bottom_wine)
+          .enter()
+          .append('option')
+          .text(function (d) { return d})
+          .attr('value', function (d) { return d });
+          let dropdown3 = d3.select('#expense-wine-selector')
+          .append('select')
+          .selectAll('myOptions')
+          .data(expense)
+          .enter()
+          .append('option')
+          .text(function (d) { return d})
+          .attr('value', function (d) { return d });
+          let legend_container = d3.select('body')
+          .append('div')
+          .attr('class', 'legendContainer');
+          let legend = d3.select('.legendContainer')
+          .append('ul')
+          .attr('class', 'legend');
+          
+
+
+
         });
 
+                                                                                    
+        
 
     });
 
