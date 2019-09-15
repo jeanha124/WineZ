@@ -383,7 +383,15 @@
           .append('ul')
           .attr('class', 'legend');
           
-
+          let quantityById = {};
+          data.forEach(function(d) {
+            if (quantityById[d.province]){
+              quantityById[d.province] += 1;
+            } else {
+              quantityById[d.province] = 1;
+            }
+          })
+          console.log(quantityById);
 
 
         });
