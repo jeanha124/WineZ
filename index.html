@@ -294,7 +294,37 @@
         .translate([width/2, height/2])
         .scale(1000)
 
-    let path = d3.geoPath().projection(projection)    
+    let path = d3.geoPath().projection(projection) 
+    
+    //data groups
+      let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
+        bottom_wine = ["all", "5", "10", "15", "20", "50", "100"],
+        expense = ["all", "Expensive", "Budget"];
+
+      let dropdown1 = d3.select('#top-wine-selector')
+        .append('select')
+        .selectAll('myOptions')
+        .data(top_wine)
+        .enter()
+        .append('option')
+        .text(function (d) { return d })
+        .attr('value', function (d) { return d });
+      let dropdown2 = d3.select('#bottom-wine-selector')
+        .append('select')
+        .selectAll('myOptions')
+        .data(bottom_wine)
+        .enter()
+        .append('option')
+        .text(function (d) { return d })
+        .attr('value', function (d) { return d });
+      let dropdown3 = d3.select('#expense-wine-selector')
+        .append('select')
+        .selectAll('myOptions')
+        .data(expense)
+        .enter()
+        .append('option')
+        .text(function (d) { return d })
+        .attr('value', function (d) { return d });
     
     d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/us-states.json", function(error, us){
       if (error) throw error;
@@ -319,57 +349,9 @@
         });
         console.log(data);
 
-        let minimum = d3.entries(quantityById)
-          // sort by value asscending
-          .sort(function (a, b) { return d3.ascending(a.value, b.value); })
-        // take the first option
-        [0],
-          maximum = d3.entries(quantityById)
-            // sort by value descending
-            .sort(function (a, b) { return d3.descending(a.value, b.value); })
-          // take the first option
-          [0];
-
-        let minColor = '#f2f0f7',
-          maxColor = '#54278f';
-
-        console.log(minimum, maximum);
-
-        let color = d3.scaleThreshold()
-          .domain([minimum, maximum])
-          .range([minColor, maxColor]);
-        
         
 
-          //data groups
-          let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
-          bottom_wine = ["all", "5", "10", "15", "20", "50", "100"],
-          expense = ["all", "Expensive", "Budget"];
-
-          let dropdown1 = d3.select('#top-wine-selector')
-          .append('select')
-          .selectAll('myOptions')
-          .data(top_wine)
-          .enter()
-          .append('option')
-          .text(function (d) { return d})
-          .attr('value', function (d) { return d });
-          let dropdown2 = d3.select('#bottom-wine-selector')
-          .append('select')
-          .selectAll('myOptions')
-          .data(bottom_wine)
-          .enter()
-          .append('option')
-          .text(function (d) { return d})
-          .attr('value', function (d) { return d });
-          let dropdown3 = d3.select('#expense-wine-selector')
-          .append('select')
-          .selectAll('myOptions')
-          .data(expense)
-          .enter()
-          .append('option')
-          .text(function (d) { return d})
-          .attr('value', function (d) { return d });
+          
           
           
           let quantityById = {};
@@ -382,7 +364,26 @@
         })
         console.log(quantityById)
         
+        let minimum = d3.entries(quantityById)
+          // sort by value asscending
+          .sort(function (a, b) { return d3.ascending(a.value, b.value); })
+        // take the first option
+        [0],
+        maximum = d3.entries(quantityById)
+            // sort by value descending
+            .sort(function (a, b) { return d3.descending(a.value, b.value); })
+          // take the first option
+          [0];
+
+        let minColor = '#f2f0f7',
+        maxColor = '#54278f';
         
+          console.log(minimum, maximum);
+
+          let color = d3.scaleThreshold()
+                .domain([minimum, maximum])
+                .range([minColor, maxColor]);
+          
           states.selectAll("path")
           .data(topojson.feature(us, us.objects.states).features)
           .enter().append("path")
