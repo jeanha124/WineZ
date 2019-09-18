@@ -303,10 +303,10 @@
       states.selectAll("path")
         .data(topojson.feature(us, us.objects.states).features)
         .enter().append("path")
-        .attr("d", path);
-        svg.append("path")
-        .attr("class", "state-borders")
-        .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));
+        .attr("d", path)
+        .style('fill', 'white')
+        .style('stroke', 'black');
+       
         
       d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", (d) => {
         return {
@@ -328,24 +328,7 @@
         });
         console.log(data);
 
-        let areas = d3.select('.areas').selectAll('circle')
-          .data(data).enter()
-          .append('circle')
-          .attr('cy', function (d) {
-            if (d.long !== null || d.lat !== null) {
-              return projection([d.long, d.lat])[1];
-            }
-          })
-          .attr('cx', function (d) {
-            if (d.long !== null || d.lat !== null) {
-              return projection([d.long, d.lat])[0];
-            }
-          })
-          .attr('id', function (d) {
-            return d.title;
-          })
-          .attr('r', 5)
-          .style('fill', 'green');
+        
 
           //data groups
           let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
@@ -385,21 +368,24 @@
           
           let quantityById = {};
           let count = 0;
-          data.forEach(function(d) {
-            if (quantityById[d.province]){
-              quantityById[d.province] += 1;
-              count += 1;
-            } else {
-              quantityById[d.province] = 1;
-              count += 1;
-            }
-          })
-          quantityById.map(function (k, v) {
-            v /= count;
-          })
+          data.forEach(function (d) {
+          if (quantityById[d.province]) {
+            quantityById[d.province] += 1;
+            count += 1;
+          } else {
+            quantityById[d.province] = 1;
+            count += 1;
+          }
+        })
+
+        for (let i in quantityById) {
+          quantityById[i] /= count;
+        }
           console.log(quantityById);
 
-          
+          let color = d3.scaleThreshold()
+                .domain([0.0002, 0.004, 0.006, 0.08, 0.1])
+                .range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
           
 
 
