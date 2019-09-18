@@ -361,25 +361,14 @@
         })
         console.log(quantityById)
 
-        let minimum = d3.entries(quantityById)
-          // sort by value asscending
-          .sort(function (a, b) { return d3.ascending(a.value, b.value); })
-        // take the first option
-        [0],
-          maximum = d3.entries(quantityById)
-            // sort by value descending
-            .sort(function (a, b) { return d3.descending(a.value, b.value); })
-          // take the first option
-          [0];
 
         let minColor = '#ad9dc2',
           maxColor = '#54278f';
 
-        console.log(minimum, maximum);
 
-        let color = d3.scaleThreshold()
+        let color = d3.scaleOrdinal()
           .domain([d3.min(quantityById, d => d.values(quantityById)), d3.max(quantityById, d => d.values(quantityById))])
-          .range(['#ad9dc2', '#621bbf']);
+          .range(['#621bbf', '#ad9dc2']);
           
 
         d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json", function (error, us) {
