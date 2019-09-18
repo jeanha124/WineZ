@@ -380,17 +380,16 @@
           .domain([minimum, maximum])
           .range([minColor, maxColor]);
 
-        d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/us-states.json", function (error, us) {
+        d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json", function (error, us) {
           if (error) throw error;
  
 
-          console.log(data)
           states.selectAll("path")
           .data(topojson.feature(us, us.objects.states).features)
           .enter().append("path")
           .attr("d", path)
           .style('fill', function (d) {
-            console.log(d);
+            return color(quantityById[d.properties.name]);
             
             
           });
