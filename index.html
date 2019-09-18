@@ -16,8 +16,8 @@
       text-align: center;
     }
     .states {
-      fill: #e5e5e5;
-      stroke: #fff;
+      fill: #fff;
+      stroke: black;
       stroke-width: 2px;
     }
     .states :hover {
@@ -299,15 +299,6 @@
     d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/us-states.json", function(error, us){
       if (error) throw error;
 
-      
-      states.selectAll("path")
-        .data(topojson.feature(us, us.objects.states).features)
-        .enter().append("path")
-        .attr("d", path)
-        .style('fill', 'white')
-        .style('stroke', 'black');
-       
-        
       d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", (d) => {
         return {
           title: d.title,
@@ -328,6 +319,26 @@
         });
         console.log(data);
 
+        let minimum = d3.entries(quantityById)
+          // sort by value asscending
+          .sort(function (a, b) { return d3.ascending(a.value, b.value); })
+        // take the first option
+        [0],
+          maximum = d3.entries(quantityById)
+            // sort by value descending
+            .sort(function (a, b) { return d3.descending(a.value, b.value); })
+          // take the first option
+          [0];
+
+        let minColor = '#f2f0f7',
+          maxColor = '#54278f';
+
+        console.log(minimum, maximum);
+
+        let color = d3.scaleThreshold()
+          .domain([minimum, maximum])
+          .range([minColor, maxColor]);
+        
         
 
           //data groups
@@ -359,39 +370,33 @@
           .append('option')
           .text(function (d) { return d})
           .attr('value', function (d) { return d });
-          let legend_container = d3.select('body')
-          .append('div')
-          .attr('class', 'legendContainer');
-          let legend = d3.select('.legendContainer')
-          .append('ul')
-          .attr('class', 'legend');
+          
           
           let quantityById = {};
-          let count = 0;
           data.forEach(function (d) {
           if (quantityById[d.province]) {
             quantityById[d.province] += 1;
-            count += 1;
           } else {
             quantityById[d.province] = 1;
-            count += 1;
           }
         })
-
-        for (let i in quantityById) {
-          quantityById[i] /= count;
-        }
-          console.log(quantityById);
-
-          let color = d3.scaleThreshold()
-                .domain([0.0002, 0.004, 0.006, 0.08, 0.1])
-                .range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
+        console.log(quantityById)
+        
+        
+          states.selectAll("path")
+          .data(topojson.feature(us, us.objects.states).features)
+          .enter().append("path")
+          .attr("d", path)
+          .style('fill', function (d) {
+            console.log(quantityById[d]);
+            
+            
+          });
           
-
 
         });
 
-                                                                                    
+          
         
 
     });
