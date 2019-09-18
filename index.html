@@ -325,9 +325,6 @@
         .append('option')
         .text(function (d) { return d })
         .attr('value', function (d) { return d });
-    
-    d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/us-states.json", function(error, us){
-      if (error) throw error;
 
       d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", (d) => {
         return {
@@ -340,22 +337,21 @@
           price: d.price
         };
       }, function (data) {
-        data.forEach(function(d){
-          let result = longlat.filter(function(lonlat){
-          return lonlat.name === d.province;
+        data.forEach(function (d) {
+          let result = longlat.filter(function (lonlat) {
+            return lonlat.name === d.province;
           });
-        d.long = (result[0] !== undefined) ? result[0].long : null;
-        d.lat = (result[0] !== undefined) ? result[0].lat : null;
+          d.long = (result[0] !== undefined) ? result[0].long : null;
+          d.lat = (result[0] !== undefined) ? result[0].lat : null;
         });
+      
         console.log(data);
 
         
+        
 
-          
-          
-          
-          let quantityById = {};
-          data.forEach(function (d) {
+         let quantityById = {};
+        data.forEach(function (d) {
           if (quantityById[d.province]) {
             quantityById[d.province] += 1;
           } else {
@@ -363,27 +359,30 @@
           }
         })
         console.log(quantityById)
-        
+
         let minimum = d3.entries(quantityById)
           // sort by value asscending
           .sort(function (a, b) { return d3.ascending(a.value, b.value); })
         // take the first option
         [0],
-        maximum = d3.entries(quantityById)
+          maximum = d3.entries(quantityById)
             // sort by value descending
             .sort(function (a, b) { return d3.descending(a.value, b.value); })
           // take the first option
           [0];
 
         let minColor = '#f2f0f7',
-        maxColor = '#54278f';
-        
-          console.log(minimum, maximum);
+          maxColor = '#54278f';
 
-          let color = d3.scaleThreshold()
-                .domain([minimum, maximum])
-                .range([minColor, maxColor]);
-          
+        console.log(minimum, maximum);
+
+        let color = d3.scaleThreshold()
+          .domain([minimum, maximum])
+          .range([minColor, maxColor]);
+
+        d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/us-states.json", function (error, us) {
+          if (error) throw error;
+ 
           states.selectAll("path")
           .data(topojson.feature(us, us.objects.states).features)
           .enter().append("path")
