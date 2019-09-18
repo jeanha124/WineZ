@@ -65,6 +65,90 @@
     Price: <span id="price" class="info"></span><br>
   </div>
   <script>      
+    function getTop5(data) {
+      data.sort(function(a, b) {
+        return parseFloat(b.points) - parseFloat(a.points);
+      });
+      console.log(data.slice(0, 5));
+      return data.slice(0, 5);
+    }
+    function getTop10(data) {
+      data.sort(function(a, b) {
+        return parseFloat(b.points) - parseFloat(a.points);
+      });
+      console.log(data.slice(0, 10));
+      return data.slice(0, 10);
+    }
+    function getTop15(data) {
+      data.sort(function(a, b) {
+        return parseFloat(b.points) - parseFloat(a.points);
+      });
+      console.log(data.slice(0, 15));
+      return data.slice(0, 15);
+    }
+    function getTop20(data) {
+      data.sort(function(a, b) {
+        return parseFloat(b.points) - parseFloat(a.points);
+      });
+      console.log(data.slice(0, 20));
+      return data.slice(0, 20);
+    }
+    function getTop50(data) {
+      data.sort(function(a, b) {
+        return parseFloat(b.points) - parseFloat(a.points);
+      });
+      console.log(data.slice(0, 50));
+      return data.slice(0, 50);
+    }
+    function getTop100(data) {
+      data.sort(function(a, b) {
+        return parseFloat(b.points) - parseFloat(a.points);
+      });
+      console.log(data.slice(0, 100));
+      return data.slice(0, 100);
+    }
+    function getLow5(data) {
+      data.sort(function(a, b) {
+        return parseFloat(a.points) - parseFloat(b.points);
+      });
+      console.log(data.slice(0, 5));
+      return data.slice(0, 5);
+    }
+    function getLow10(data) {
+      data.sort(function(a, b) {
+        return parseFloat(a.points) - parseFloat(b.points);
+      });
+      console.log(data.slice(0, 10));
+      return data.slice(0, 10);
+    }
+    function getLow15(data) {
+      data.sort(function(a, b) {
+        return parseFloat(a.points) - parseFloat(b.points);
+      });
+      console.log(data.slice(0, 15));
+      return data.slice(0, 15);
+    }
+    function getLow20(data) {
+      data.sort(function(a, b) {
+        return parseFloat(a.points) - parseFloat(b.points);
+      });
+      console.log(data.slice(0, 20));
+      return data.slice(0, 20);
+    }
+    function getLow50(data) {
+      data.sort(function(a, b) {
+        return parseFloat(a.points) - parseFloat(b.points);
+      });
+      console.log(data.slice(0, 50));
+      return data.slice(0, 50);
+    }
+    function getLow100(data) {
+      data.sort(function(a, b) {
+        return parseFloat(a.points) - parseFloat(b.points);
+      });
+      console.log(data.slice(0, 100));
+      return data.slice(0, 100);
+    }
     
     let longlat = [{
       name: 'Alabama',
@@ -390,6 +474,18 @@
             color(quantityById[d.properties.name]))
           });
           
+          getTop5(data);
+          getTop10(data);
+          getTop15(data);
+          getTop20(data);
+          getTop50(data);
+          getTop100(data);
+          getLow5(data);
+          getLow10(data);
+          getLow15(data);
+          getLow20(data);
+          getLow50(data);
+          getLow100(data);
 
         });
 
