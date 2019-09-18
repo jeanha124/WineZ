@@ -372,14 +372,15 @@
           // take the first option
           [0];
 
-        let minColor = '#a489c7',
+        let minColor = '#ad9dc2',
           maxColor = '#54278f';
 
         console.log(minimum, maximum);
 
         let color = d3.scaleThreshold()
-          .domain([minimum, maximum])
-          .range([minColor, maxColor]);
+          .domain([d3.min(quantityById, d => d.values(quantityById)), d3.max(quantityById, d => d.values(quantityById))])
+          .range(['#ad9dc2', '#621bbf']);
+          
 
         d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json", function (error, us) {
           if (error) throw error;
@@ -394,6 +395,10 @@
               console.log(quantityById[d.properties.name])
               return color(quantityById[d.properties.name]);
             }
+          })
+          .on('mouseover', function(d) {
+            console.log('value: ' + quantityById[d.properties.name] + ', color: ' +
+            color(quantityById[d.properties.name]))
           });
           
 
