@@ -22,6 +22,7 @@
     }
     .states :hover {
       fill: #722f37;
+      cursor: pointer;
     }
     .state-borders {
       fill: none;
@@ -371,7 +372,7 @@
           // take the first option
           [0];
 
-        let minColor = '#f2f0f7',
+        let minColor = '#a489c7',
           maxColor = '#54278f';
 
         console.log(minimum, maximum);
@@ -389,9 +390,10 @@
           .enter().append("path")
           .attr("d", path)
           .style('fill', function (d) {
-            return color(quantityById[d.properties.name]);
-            
-            
+            if (quantityById[d.properties.name]){
+              console.log(quantityById[d.properties.name])
+              return color(quantityById[d.properties.name]);
+            }
           });
           
 
