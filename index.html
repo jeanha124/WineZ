@@ -430,7 +430,7 @@
         .range(d3.schemeRdBu[9]);
 
     let x = d3.scaleLinear()
-        .domain([1, 10])
+        .domain([0, 8])
         .rangeRound([600, 850]);
     
     let g = svg.append('g')
@@ -457,6 +457,13 @@
       .attr('text-anchor', 'start')
       .attr('font-weight', 'bold')
       .text('Quantity of Wine');
+
+    g.call(d3.axisBottom(x)
+      .tickSize(12)
+      )
+      .select('.domain')
+      .remove();
+
 
     let promises = [
       d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json"),
