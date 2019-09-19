@@ -6,11 +6,12 @@
   <title>Wine in the USA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
   <!-- <script src="https://maps.google.com/maps/api/js?sensor=true"></script> -->
   <script src="https://d3js.org/topojson.v2.min.js"></script>
   <script src="http://d3js.org/d3-queue.v2.min.js"></script>
   <script src="http://d3js.org/d3-geo-projection.v2.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
   <style>
     header {
       text-align: center;
@@ -429,10 +430,54 @@
 
     let path = d3.geoPath().projection(projection) 
     
-    d3.queue()
-      .defer(d3.json, "https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json")
-      .defer(d3.csv, "https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv")
-      .await(ready);
+    let color = d3.scaleThreshold()
+        .domain(d3.range(0, 10000))
+        .range(d3.schemeBlues[9]);
+
+    let promises = [
+      d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json"),
+      d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv")
+    ]
+
+    Promise.all(promises).then(ready)
+
+    function ready([us, data]) {
+      data.forEach(function (d) {
+        let result = longlat.filter(function (lonlat) {
+          return lonlat.name === d.province;
+        });
+        d.id = (result[0] !== undefined) ? result[0].id : null;
+        d.long = (result[0] !== undefined) ? result[0].long : null;
+        d.lat = (result[0] !== undefined) ? result[0].lat : null;
+      });
+
+      console.log(data);
+
+      let quantityById = {};
+      data.forEach(function (d) {
+        if (d.id < 57 && d.id !== null) {
+          if (quantityById[d.id]) {
+            quantityById[d.id]++;
+          } else {
+            quantityById[d.id] = 1;
+          }
+        }
+      });
+      console.log(quantityById);
+
+      svg.append('g')
+        .attr('class', 'states')
+        .selectAll("path")
+        .data(topojson.feature(us, us.objects.states).features)
+        .enter().append("path")
+        .attr("d", path)
+        .attr('fill', function (d) {
+          return color(quantityById[d.id]);
+        })
+        .append('title')
+        .text(function (d) { return d.title });
+    }
+    
     //data groups
       let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
         bottom_wine = ["all", "5", "10", "15", "20", "50", "100"],
@@ -465,47 +510,7 @@
 
 
 
-      function ready(error, us, data) {
-        if (error) throw error;
-
-        data.forEach(function(d) {
-          let result = longlat.filter(function(lonlat) {
-            return lonlat.name === d.province;
-          });
-          d.id = (result[0] !== undefined) ? result[0].id: null;
-          d.long = (result[0] !== undefined) ? result[0].long : null;
-          d.lat = (result[0] !== undefined) ? result[0].lat : null;
-        });
-
-        console.log(data);
-
-        let quantityById = {};
-        data.forEach(function(d) {
-          if (d.id < 57 && d.id !== null){
-            if (quantityById[d.id]) {
-              quantityById[d.id]++;
-            } else {
-              quantityById[d.id] = 1;
-            }
-          }
-        });
-        console.log(quantityById);
-
-        let color = d3.scaleThreshold()
-              .domain([0, 50, 200, 500, 1000, 10000])
-              .range(['white', 'blue']);
-
-        svg.append('g')
-          .attr('class', 'states')
-          .selectAll("path")
-          .data(topojson.feature(us, us.objects.states).features)
-          .enter().append("path")
-          .attr("d", path)
-          .style('fill', function(d) {
-            return color(quantityById[d.id]);
-          });
-      }  
-     
+      
     
 
     
