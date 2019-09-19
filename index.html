@@ -427,7 +427,7 @@
     
     let color = d3.scaleThreshold()
         .domain(d3.range(0, 10000))
-        .range(d3.schemeBlues[9]);
+        .range(d3.schemeRdBu[9]);
 
     let x = d3.scaleLinear()
         .domain([1, 10])
@@ -449,7 +449,14 @@
         .attr('width', function (d) { return x(d[1]) - x(d[0]); })
         .attr('fill', function(d) { return color(d[0]); });
 
-
+    g.append('text')
+      .attr('class', 'sub')
+      .attr('x', x.range()[0])
+      .attr('y', -7)
+      .attr('fill', '#000')
+      .attr('text-anchor', 'start')
+      .attr('font-weight', 'bold')
+      .text('Quantity of Wine');
 
     let promises = [
       d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json"),
