@@ -427,7 +427,7 @@
     
     let color = d3.scaleThreshold()
         .domain(d3.range(0, 10000))
-        .range(d3.schemeSpectral[9]);
+        .range(d3.schemePuBu[9]);
 
     let x = d3.scaleLinear()
         .domain([0, 8])
@@ -463,6 +463,37 @@
       )
       .select('.domain')
       .remove();
+
+    //data groups
+      let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
+        bottom_wine = ["all", "5", "10", "15", "20", "50", "100"],
+        expense = ["all", "Expensive", "Budget"];
+
+      let dropdown1 = d3.select('#top-wine-selector')
+        .append('select')
+        .selectAll('myOptions')
+        .data(top_wine)
+        .enter()
+        .append('option')
+        .text(function (d) { return d })
+        .attr('value', function (d) { return d });
+      let dropdown2 = d3.select('#bottom-wine-selector')
+        .append('select')
+        .selectAll('myOptions')
+        .data(bottom_wine)
+        .enter()
+        .append('option')
+        .text(function (d) { return d })
+        .attr('value', function (d) { return d });
+      let dropdown3 = d3.select('#expense-wine-selector')
+        .append('select')
+        .selectAll('myOptions')
+        .data(expense)
+        .enter()
+        .append('option')
+        .text(function (d) { return d })
+        .attr('value', function (d) { return d });
+    
 
 
     let promises = [
@@ -507,39 +538,12 @@
         })
         .append('title')
         .text(function (d) { return d.title });
+
+     
+         
     }
     
-    //data groups
-      let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
-        bottom_wine = ["all", "5", "10", "15", "20", "50", "100"],
-        expense = ["all", "Expensive", "Budget"];
-
-      let dropdown1 = d3.select('#top-wine-selector')
-        .append('select')
-        .selectAll('myOptions')
-        .data(top_wine)
-        .enter()
-        .append('option')
-        .text(function (d) { return d })
-        .attr('value', function (d) { return d });
-      let dropdown2 = d3.select('#bottom-wine-selector')
-        .append('select')
-        .selectAll('myOptions')
-        .data(bottom_wine)
-        .enter()
-        .append('option')
-        .text(function (d) { return d })
-        .attr('value', function (d) { return d });
-      let dropdown3 = d3.select('#expense-wine-selector')
-        .append('select')
-        .selectAll('myOptions')
-        .data(expense)
-        .enter()
-        .append('option')
-        .text(function (d) { return d })
-        .attr('value', function (d) { return d });
-
-
+    
 
       
     
