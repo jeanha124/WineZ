@@ -66,84 +66,94 @@
     Price: <span id="price" class="info"></span><br>
   </div>
   <script>      
-    function getTop5(data) {
-      data.sort(function(a, b) {
-        return parseFloat(b.points) - parseFloat(a.points);
-      });
+    const getTop5 = function(data, expense) {
+      if (expense === 'Expensive'){
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
+        });
+      } else if (expense === 'Budget'){
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
+        });
+      } else {
+        data.sort(function(a, b) {
+          return parseFloat(b.points) - parseFloat(a.points);
+        });
+      }
       console.log(data.slice(0, 5));
       return data.slice(0, 5);
     }
-    function getTop10(data) {
+    const getTop10 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(b.points) - parseFloat(a.points);
       });
       console.log(data.slice(0, 10));
       return data.slice(0, 10);
     }
-    function getTop15(data) {
+    const getTop15 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(b.points) - parseFloat(a.points);
       });
       console.log(data.slice(0, 15));
       return data.slice(0, 15);
     }
-    function getTop20(data) {
+    const getTop20 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(b.points) - parseFloat(a.points);
       });
       console.log(data.slice(0, 20));
       return data.slice(0, 20);
     }
-    function getTop50(data) {
+    const getTop50 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(b.points) - parseFloat(a.points);
       });
       console.log(data.slice(0, 50));
       return data.slice(0, 50);
     }
-    function getTop100(data) {
+    const getTop100 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(b.points) - parseFloat(a.points);
       });
       console.log(data.slice(0, 100));
       return data.slice(0, 100);
     }
-    function getLow5(data) {
+    const getLow5 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(a.points) - parseFloat(b.points);
       });
       console.log(data.slice(0, 5));
       return data.slice(0, 5);
     }
-    function getLow10(data) {
+    const getLow10 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(a.points) - parseFloat(b.points);
       });
       console.log(data.slice(0, 10));
       return data.slice(0, 10);
     }
-    function getLow15(data) {
+    const getLow15 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(a.points) - parseFloat(b.points);
       });
       console.log(data.slice(0, 15));
       return data.slice(0, 15);
     }
-    function getLow20(data) {
+    const getLow20 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(a.points) - parseFloat(b.points);
       });
       console.log(data.slice(0, 20));
       return data.slice(0, 20);
     }
-    function getLow50(data) {
+    const getLow50 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(a.points) - parseFloat(b.points);
       });
       console.log(data.slice(0, 50));
       return data.slice(0, 50);
     }
-    function getLow100(data) {
+    const getLow100 = function(data) {
       data.sort(function(a, b) {
         return parseFloat(a.points) - parseFloat(b.points);
       });
@@ -527,7 +537,7 @@
       });
       console.log(quantityById);
 
-      svg.append('g')
+    let selection = svg.append('g')
         .attr('class', 'states')
         .selectAll("path")
         .data(topojson.feature(us, us.objects.states).features)
@@ -536,11 +546,18 @@
         .attr('fill', function (d) {
           return color(quantityById[d.id]);
         })
+        
         .append('title')
-        .text(function (d) { return d.title });
+        .text(function (d) { return d.title })
+        
 
-     
-         
+     let dropDown = d3.select('#top-wine-selector'), 
+     dropDown2 = d3.select('#bottom-wine-selector'),
+     dropDown3 = d3.select('#expense-wine-selector');
+
+      getTop5(data, 'Expensive');
+      getTop5(data, 'Budget');
+      
     }
     
     
