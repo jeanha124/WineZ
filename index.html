@@ -84,79 +84,189 @@
       return data.slice(0, 5);
     }
     const getTop10 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(b.points) - parseFloat(a.points);
-      });
+      if (expense === 'Expensive') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
+        });
+      } else if (expense === 'Budget') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
+        });
+      } else {
+        data.sort(function (a, b) {
+          return parseFloat(b.points) - parseFloat(a.points);
+        });
+      }
       console.log(data.slice(0, 10));
       return data.slice(0, 10);
     }
     const getTop15 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(b.points) - parseFloat(a.points);
-      });
+      if (expense === 'Expensive') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
+        });
+      } else if (expense === 'Budget') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
+        });
+      } else {
+        data.sort(function (a, b) {
+          return parseFloat(b.points) - parseFloat(a.points);
+        });
+      }
       console.log(data.slice(0, 15));
       return data.slice(0, 15);
     }
     const getTop20 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(b.points) - parseFloat(a.points);
-      });
+      if (expense === 'Expensive') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
+        });
+      } else if (expense === 'Budget') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
+        });
+      } else {
+        data.sort(function (a, b) {
+          return parseFloat(b.points) - parseFloat(a.points);
+        });
+      }
       console.log(data.slice(0, 20));
       return data.slice(0, 20);
     }
     const getTop50 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(b.points) - parseFloat(a.points);
-      });
+      if (expense === 'Expensive') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
+        });
+      } else if (expense === 'Budget') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
+        });
+      } else {
+        data.sort(function (a, b) {
+          return parseFloat(b.points) - parseFloat(a.points);
+        });
+      }
       console.log(data.slice(0, 50));
       return data.slice(0, 50);
     }
     const getTop100 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(b.points) - parseFloat(a.points);
-      });
+      if (expense === 'Expensive') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
+        });
+      } else if (expense === 'Budget') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
+        });
+      } else {
+        data.sort(function (a, b) {
+          return parseFloat(b.points) - parseFloat(a.points);
+        });
+      }
       console.log(data.slice(0, 100));
       return data.slice(0, 100);
     }
     const getLow5 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(a.points) - parseFloat(b.points);
-      });
+      if (expense === 'Expensive') {
+        data.sort(function (a, b) {
+          return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(b.price) - parseFloat(a.price));
+        });
+      } else if (expense === 'Budget') {
+        data.sort(function (a, b) {
+          return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(a.price) - parseFloat(b.price));
+        });
+      } else {
+        data.sort(function (a, b) {
+          return parseFloat(a.points) - parseFloat(b.points);
+        });
+      }
       console.log(data.slice(0, 5));
       return data.slice(0, 5);
     }
     const getLow10 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(a.points) - parseFloat(b.points);
+      if (expense === 'Expensive') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(b.price) - parseFloat(a.price));
       });
+      } else if (expense === 'Budget') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(a.price) - parseFloat(b.price));
+      });
+      } else {
+      data.sort(function (a, b) {
+      return parseFloat(a.points) - parseFloat(b.points);
+      });
+      }
       console.log(data.slice(0, 10));
       return data.slice(0, 10);
     }
     const getLow15 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(a.points) - parseFloat(b.points);
+      if (expense === 'Expensive') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(b.price) - parseFloat(a.price));
       });
+      } else if (expense === 'Budget') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(a.price) - parseFloat(b.price));
+      });
+      } else {
+      data.sort(function (a, b) {
+      return parseFloat(a.points) - parseFloat(b.points);
+      });
+      }
       console.log(data.slice(0, 15));
       return data.slice(0, 15);
     }
     const getLow20 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(a.points) - parseFloat(b.points);
+      if (expense === 'Expensive') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(b.price) - parseFloat(a.price));
       });
+      } else if (expense === 'Budget') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(a.price) - parseFloat(b.price));
+      });
+      } else {
+      data.sort(function (a, b) {
+      return parseFloat(a.points) - parseFloat(b.points);
+      });
+      }
       console.log(data.slice(0, 20));
       return data.slice(0, 20);
     }
     const getLow50 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(a.points) - parseFloat(b.points);
+      if (expense === 'Expensive') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(b.price) - parseFloat(a.price));
       });
+      } else if (expense === 'Budget') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(a.price) - parseFloat(b.price));
+      });
+      } else {
+      data.sort(function (a, b) {
+      return parseFloat(a.points) - parseFloat(b.points);
+      });
+      }
       console.log(data.slice(0, 50));
       return data.slice(0, 50);
     }
     const getLow100 = function(data) {
-      data.sort(function(a, b) {
-        return parseFloat(a.points) - parseFloat(b.points);
+      if (expense === 'Expensive') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(b.price) - parseFloat(a.price));
       });
+      } else if (expense === 'Budget') {
+      data.sort(function (a, b) {
+      return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(a.price) - parseFloat(b.price));
+      });
+      } else {
+      data.sort(function (a, b) {
+      return parseFloat(a.points) - parseFloat(b.points);
+      });
+      }
       console.log(data.slice(0, 100));
       return data.slice(0, 100);
     }
