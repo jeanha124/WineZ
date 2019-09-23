@@ -647,7 +647,7 @@
       });
       console.log(quantityById);
 
-    let selection = svg.append('g')
+    svg.append('g')
         .attr('class', 'states')
         .selectAll("path")
         .data(topojson.feature(us, us.objects.states).features)
@@ -656,17 +656,13 @@
         .attr('fill', function (d) {
           return color(quantityById[d.id]);
         })
-        
         .append('title')
-        .text(function (d) { return d.title })
+        .text(function (d) { return d.title });
         
+      
+     
 
-     let dropDown = d3.select('#top-wine-selector'), 
-     dropDown2 = d3.select('#bottom-wine-selector'),
-     dropDown3 = d3.select('#expense-wine-selector');
-
-      getTop5(data, 'Expensive');
-      getTop5(data, 'Budget');
+      
       
     }
     
