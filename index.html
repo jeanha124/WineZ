@@ -72,6 +72,7 @@
       <span>Please select an expense: </span>
     </div>
   </div>
+  <div id='wine-info'></div>
   <script>      
     const getTop = function(num, data, expense) {
       if (expense === 'Expensive'){
@@ -522,16 +523,25 @@
         })
     
     d3.select('select')
-      .on('change', function (d) {
+      .on('change', function (d, i) {
         let topSelected = d3.select('#top-wine-selector option:checked').node().value;
-        let expensed = d3.select('#expense-wine-selector option:checked').node().value;
         let lowSelected = d3.select('#bottom-wine-selector option:checked').node().value;
+        let expensed = d3.select('#expense-wine-selector option:checked').node().value;
         if (topSelected) {
-          d3.select('#wine-info').text(objTitles(getTop(topSelected, data, expensed)));
-        } else if (lowSelected) {
-          d3.select('#wine-info').text(objTitles(getLow(lowSelected, data, expensed)));
+          let dats = getTop(topSelected, data, expensed);
+          let message = objTitles(getTop(topSelected, data, expensed));
+          d3.select('#wine-info').text(message)
+            .on('mouseover', function(d) {
+              
+            });
+        }
+        else if (lowSelected) {
+          let message = objTitles(getLow(lowSelected, data, expensed));
+          d3.select('#wine-info').text(message);
         }
       });
+
+      
     
         
 
