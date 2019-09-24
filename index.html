@@ -400,8 +400,8 @@
         .range(d3.schemePuBu[9]);
 
     let x = d3.scaleLinear()
-        .domain([0, 8])
-        .rangeRound([600, 850]);
+        .domain([0, 7])
+        .rangeRound([600, 860]);
     
     let g = svg.append('g')
               .attr('class', 'key')
@@ -532,7 +532,7 @@
           let message = objTitles(getTop(topSelected, data, expensed));
           d3.select('#wine-info').text(message)
             .on('mouseover', function(d) {
-              
+
             });
         }
         else if (lowSelected) {
