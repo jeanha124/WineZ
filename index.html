@@ -104,6 +104,17 @@
       return data.slice(0, num);
     }
     
+    const objTitles = function (selections) {
+      let titles = [];
+      selections.forEach(function(d) {
+        for (i in d) {
+          if (i === 'title') {
+            titles.push(d[i]);
+          }
+        }
+      })
+      return titles;
+    }
     let longlat = [{
       id: '01',
       name: 'Alabama',
@@ -422,7 +433,7 @@
         bottom_wine = ["all", "5", "10", "15", "20", "50", "100"],
         expense = ["all", "Expensive", "Budget"];
 
-      let dropdown1 = d3.select('#top-wine-selector')
+      d3.select('#top-wine-selector')
         .append('select')
         .selectAll('myOptions')
         .data(top_wine)
@@ -430,7 +441,7 @@
         .append('option')
         .text(function (d) { return d })
         .attr('value', function (d) { return d });
-      let dropdown2 = d3.select('#bottom-wine-selector')
+      d3.select('#bottom-wine-selector')
         .append('select')
         .selectAll('myOptions')
         .data(bottom_wine)
@@ -438,7 +449,7 @@
         .append('option')
         .text(function (d) { return d })
         .attr('value', function (d) { return d });
-      let dropdown3 = d3.select('#expense-wine-selector')
+      d3.select('#expense-wine-selector')
         .append('select')
         .selectAll('myOptions')
         .data(expense)
@@ -492,24 +503,18 @@
         .append('title')
         .text(function (d) { return d.title });
     
-        d3.select('select')
-          .on('change', function (d) {
-            let topSelected = d3.select('#top-wine-selector option:checked').node().value;
-            let expensed = d3.select('#expense-wine-selector option:checked').node().value;
-            let lowSelected = d3.select('#bottom-wine-selector option:checked').node().value;
-            if (topSelected) {
-              d3.select('#wine-info').text(getTop(topSelected, data, expensed));
-            } else if (lowSelected) {
-              d3.select('#wine-info').text(getLow(lowSelected, data, expensed));
-            }
-          })
-    svg.append('g')
-        .select('#wine-info')
-        .attr('class', 'info')
-        .selectAll('p')
-        .data(data)
-        .enter().append('p')
-        .text(function(d) { return d.title });
+    d3.select('select')
+      .on('change', function (d) {
+        let topSelected = d3.select('#top-wine-selector option:checked').node().value;
+        let expensed = d3.select('#expense-wine-selector option:checked').node().value;
+        let lowSelected = d3.select('#bottom-wine-selector option:checked').node().value;
+        if (topSelected) {
+          d3.select('#wine-info').text(objTitles(getTop(topSelected, data, expensed)));
+        } else if (lowSelected) {
+          d3.select('#wine-info').text(objTitles(getLow(lowSelected, data, expensed)));
+        }
+      });
+    
         
 
       
