@@ -49,6 +49,9 @@
   <div id="map"></div>
   <div id="wine_filters">
     <span>View Wines according to - - -</span>
+    <br>
+    <span>Please select an expense first and then choose the next one</span>
+    <br>
     <div id="top-wine-selector">
       <span>Please select a top choice: </span>
     </div>
@@ -491,11 +494,14 @@
     
         d3.select('select')
           .on('change', function (d) {
-            let selected = d3.select('#top-wine-selector option:checked').node().value;
+            let topSelected = d3.select('#top-wine-selector option:checked').node().value;
             let expensed = d3.select('#expense-wine-selector option:checked').node().value;
-            console.log(getTop(selected, data, expensed))
-            console.log(getLow(selected, data, expensed))
-            d3.select('#wine-info').text(selected);
+            let lowSelected = d3.select('#bottom-wine-selector option:checked').node().value;
+            if (topSelected) {
+              d3.select('#wine-info').text(getTop(topSelected, data, expensed));
+            } else if (lowSelected) {
+              d3.select('#wine-info').text(getLow(lowSelected, data, expensed));
+            }
           })
     svg.append('g')
         .select('#wine-info')
