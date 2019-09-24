@@ -29,7 +29,17 @@
       fill: none;
       stroke-width: 1px;
     }
-    
+    .tools {
+      position: absolute;
+      text-align: center;
+      width: 60px;
+      height: 28px;
+      padding: 2px;
+      background: lightblue;
+      border: 0px;
+      border-radius: 6px;
+      pointer-events: none;
+    }
     footer {
       font: 20px;
       text-align: center;
@@ -61,12 +71,6 @@
     <div id="expense-wine-selector">
       <span>Please select an expense: </span>
     </div>
-  </div>
-  <div id="wine_info">
-    Name: <span id="title" class="info"></span><br>
-    Description: <span id="description" class="info"></span><br>
-    Variety: <span id="variety" class="info"></span><br>
-    Price: <span id="price" class="info"></span><br>
   </div>
   <script>      
     const getTop = function(num, data, expense) {
@@ -459,7 +463,9 @@
         .text(function (d) { return d })
         .attr('value', function (d) { return d });
     
-
+    let tools = d3.select('#map').append('div')
+          .attr('class', 'tooltip')
+          .style('opacity', 0);
 
     let promises = [
       d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json"),
@@ -501,8 +507,19 @@
         .attr('fill', function (d) {
           return color(quantityById[d.id]);
         })
-        .append('title')
-        .text(function (d) { return d.title });
+        .on('mouseover', function (d) {
+          tools.transition()
+            .duration(200)
+            .style('opacity', .8);
+          tools.html("Types of Wine: " + quantityById[d.id])
+            .style('left', (d3.event.pageX) + 'px')
+            .style('top', (d3.event.pageY - 25) + 'px');
+        })  
+        .on('mouseout', function (d) {
+          tools.transition()
+            .duration(500)
+            .style('opactiy', 0)
+        })
     
     d3.select('select')
       .on('change', function (d) {
