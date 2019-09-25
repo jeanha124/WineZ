@@ -468,6 +468,7 @@
           .attr('class', 'tooltip')
           .style('opacity', 0);
 
+    
     let promises = [
       d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json"),
       d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv")
@@ -499,6 +500,25 @@
       });
       console.log(quantityById);
 
+      let updateAttr = (data) => {
+        let quantityById = {};
+        data.forEach(function (d) {
+          if (d.id < 57 && d.id !== null) {
+            if (quantityById[d.id]) {
+              quantityById[d.id]++;
+            } else {
+              quantityById[d.id] = 1;
+            }
+          }
+        });
+        d3.selectAll('.states')
+          .data(topojson.feature(us, us.objects.states).features)
+          .enter().append("path")
+          .attr("d", path)
+          .style('fill', function (d) {
+            return color(quantityById[d.id])
+          });
+      }      
     svg.append('g')
         .attr('class', 'states')
         .selectAll("path")
@@ -530,9 +550,10 @@
         if (topSelected) {
           let dats = getTop(topSelected, data, expensed);
           let message = objTitles(getTop(topSelected, data, expensed));
+          updateAttr(dats);
           d3.select('#wine-info').text(message)
-            .on('mouseover', function(d) {
-
+            .on('mouseover', function(d, i) {
+             
             });
         }
         else if (lowSelected) {
