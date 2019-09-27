@@ -59,7 +59,10 @@
         <span>Please select an expense: </span>
       </div>
     </div>
-    <div id='wine-info'></div>
+    <div style="display:flex;">
+      <div id='wine-info'></div>
+      <div id='info'></div>
+    </div>
     <script>      
       const getTop = function(num, data, expense) {
         if (expense === 'Expensive'){
@@ -513,11 +516,18 @@
         .style('padding', '5px')
         .style('white-space', 'pre-wrap')
       
-      let winehover = d3.select('#wine-info')
+      let winehover = d3.select('#info')
         .append('div')
         .style('opacity', 0.5)
         .attr('class', 'winefo')
-        .style('background-color', 'lightgreen')
+        .style('background-color', 'white')
+        .style('width', '500px')
+        .style('border', 'solid')
+        .style('border-width', '2px')
+        .style('border-radius', '5px')
+        .style('padding', '5px')
+        .style('white-space', 'pre-wrap')
+        
 
       let mouseover2 = function(d) {
         winehover.style('opactiy', 1)
@@ -526,8 +536,15 @@
           .style('opactiy', 1)
       } 
       let mousemove2 = function (d, i) {
-        console.log(i);
+        winehover.html('Wine Name: ' + d.title + '\n' + 'Wine Description: ' + d.description + '\n' + 'Wine Variety: ' +
+        d.variety + '\n' + 'Wine Quality: ' + d.points + '%' + '\n' + 'Wine Price: $' + d.price)
       } 
+      let mouseleave2 = function (d) {
+          winehover.style('opacity', 0)
+          d3.select(this)
+            .style('stroke', 'black')
+            .style('opacity', 1)
+        }
       svg.append('g')
           .attr('class', 'states')
           .selectAll("path")
@@ -547,8 +564,13 @@
           let expensed = d3.select('#expense-wine-selector option:checked').node().value;
           if (topSelected) {
             let dats = getTop(topSelected, data, expensed);
-            d3.select('#wine-info').selectAll('p').data(dats).enter().append('div').text(function(d){ return d.title});
-            
+            d3.select('#wine-info')
+              .selectAll('p')
+              .data(dats)
+              .enter().append('div')
+              .text(function(d){ return d.title})
+              .on('mouseover', mouseover2)
+              .on('mousemove', mousemove2);    
           }
           
         });
