@@ -507,7 +507,41 @@
         .style('fill', function (d) {
           return color(quantityById[d.id])
         });
-    }      
+    }  
+    
+    let tooltip = d3.select('#map')
+        .append('div')
+        .style('opacity', 0)
+        .attr('class', 'tooltip')
+        .style('background-color', 'white')
+        .style('border', 'solid')
+        .style('border-width', '2px')
+        .style('border-radius', '5px')
+        .style('padding', '5ps')
+      let mouseover = function (d) {
+        tooltip.style('opacity', 1)
+        d3.select(this)
+          .style('stroke', 'grey')
+          .style('opacity', 1)
+      }
+
+      let mousemove = function (d) {
+        if (quantityById[d.id] === undefined) {
+          tooltip.html('There is no wine here')
+        } else {
+          tooltip.html('There are ' + quantityById[d.id] + ' types of wine')
+            .style('left', (d3.mouse(this)[0]+70) + 'px')
+            .style('top', (d3.mouse(this)[1]) + 'px')
+        }
+      }
+
+      let mouseleave = function(d) {
+        tooltip.style('opacity', 0)
+        d3.select(this)
+          .style('stroke', 'black')
+          .style('opacity', 1)
+      }
+
     svg.append('g')
         .attr('class', 'states')
         .selectAll("path")
@@ -517,19 +551,9 @@
         .attr('fill', function (d) {
           return color(quantityById[d.id]);
         })
-        .on('mouseover', function (d) {
-          tools.transition()
-            .duration(200)
-            .style('opacity', .8);
-          tools.html("Types of Wine: " + quantityById[d.id])
-            .style('left', (d3.event.pageX) + 'px')
-            .style('top', (d3.event.pageY - 25) + 'px');
-        })  
-        .on('mouseout', function (d) {
-          tools.transition()
-            .duration(500)
-            .style('opactiy', 0)
-        })
+        .on('mouseover', mouseover)  
+        .on('mousemove', mousemove)
+        .on('mouseleave', mouseleave)
         
     d3.select('select')
       .on('change', function (d, i) {
