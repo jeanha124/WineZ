@@ -452,10 +452,6 @@
         .append('option')
         .text(function (d) { return d })
         .attr('value', function (d) { return d });
-    
-    let tools = d3.select('#map').append('div')
-          .attr('class', 'tooltip')
-          .style('opacity', 0);
 
     
     let promises = [
@@ -511,13 +507,14 @@
     
     let tooltip = d3.select('#map')
         .append('div')
-        .style('opacity', 0)
+        .style('opacity', 0.5)
         .attr('class', 'tooltip')
-        .style('background-color', 'white')
+        .style('background-color', 'lightgrey')
+        .style('width', '150px')
         .style('border', 'solid')
         .style('border-width', '2px')
         .style('border-radius', '5px')
-        .style('padding', '5ps')
+        .style('padding', '5px')
       let mouseover = function (d) {
         tooltip.style('opacity', 1)
         d3.select(this)
