@@ -78,7 +78,6 @@
             return parseFloat(b.points) - parseFloat(a.points);
           });
         }
-        console.log(data.slice(0, num));
         return data.slice(0, num);
       }
       
@@ -435,7 +434,6 @@
           d.lat = (result[0] !== undefined) ? result[0].lat : null;
         });
   
-        console.log(data);
   
         let quantityById = {};
         data.forEach(function (d) {
@@ -447,7 +445,6 @@
             }
           }
         });
-        console.log(quantityById);
   
       let updateAttr = (data) => {
         let quantityById = {};
@@ -571,7 +568,9 @@
               .text(function(d){ return d.title})
               .on('mouseover', mouseover2)
               .on('mousemove', mousemove2);    
+              
           }
+
           
         });
   
