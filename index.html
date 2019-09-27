@@ -88,23 +88,6 @@
       console.log(data.slice(0, num));
       return data.slice(0, num);
     }
-    const getLow = function(num, data, expense) {
-      if (expense === 'Expensive') {
-        data.sort(function (a, b) {
-          return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(b.price) - parseFloat(a.price));
-        });
-      } else if (expense === 'Budget') {
-        data.sort(function (a, b) {
-          return (parseFloat(a.points) - parseFloat(b.points)) && (parseFloat(a.price) - parseFloat(b.price));
-        });
-      } else {
-        data.sort(function (a, b) {
-          return parseFloat(a.points) - parseFloat(b.points);
-        });
-      }
-      console.log(data.slice(0, num));
-      return data.slice(0, num);
-    }
     
     const objTitles = function (selections) {
       let titles = [];
@@ -115,8 +98,8 @@
           }
         }
       })
-      console.log(titles);
-      return titles;
+      return titles.join('\n');
+      
     }
     let longlat = [{
       id: '01',
@@ -543,6 +526,16 @@
           .style('opacity', 1)
       }
 
+    let wineInfo = d3.select('#wine-info')
+      .style('opacity', 0.5)
+      .style('width', '500px')
+      .style('background-color', 'lightblue')
+      .style('border', 'solid')
+      .style('border-width', '2px')
+      .style('border-radius', '5px')
+      .style('padding', '5px')
+      .style('white-space', 'pre-wrap')
+
     svg.append('g')
         .attr('class', 'states')
         .selectAll("path")
@@ -562,7 +555,7 @@
         let expensed = d3.select('#expense-wine-selector option:checked').node().value;
         if (topSelected) {
           let dats = getTop(topSelected, data, expensed);
-          let message = objTitles(getTop(topSelected, data, expensed)).slice('\n');
+          let message = objTitles(getTop(topSelected, data, expensed));
           updateAttr(dats);
           d3.select('#wine-info').text(message)
             .on('mouseover', function(d, i) {
