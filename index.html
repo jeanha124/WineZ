@@ -79,18 +79,6 @@
         return data.slice(0, num);
       }
       
-      const objTitles = function (selections) {
-        let titles = [];
-        selections.forEach(function(d) {
-          for (i in d) {
-            if (i === 'title') {
-              titles.push(d[i]);
-            }
-          }
-        })
-        return titles.join('\n');
-        
-      }
       let longlat = [{
         id: '01',
         name: 'Alabama',
@@ -497,7 +485,6 @@
         }
   
         let mousemove = function (d) {
-          console.log(d)
           if (quantityById[d.id] === undefined) {
             tooltip.html('There is no wine here in ' + d.properties.name)
           } else if (quantityById[d.id] === 1) {
@@ -525,7 +512,22 @@
         .style('border-radius', '5px')
         .style('padding', '5px')
         .style('white-space', 'pre-wrap')
-  
+      
+      let winehover = d3.select('#wine-info')
+        .append('div')
+        .style('opacity', 0.5)
+        .attr('class', 'winefo')
+        .style('background-color', 'lightgreen')
+
+      let mouseover2 = function(d) {
+        winehover.style('opactiy', 1)
+        d3.select(this)
+          .style('stroke', 'green')
+          .style('opactiy', 1)
+      } 
+      let mousemove2 = function (d, i) {
+        console.log(i);
+      } 
       svg.append('g')
           .attr('class', 'states')
           .selectAll("path")
@@ -545,12 +547,8 @@
           let expensed = d3.select('#expense-wine-selector option:checked').node().value;
           if (topSelected) {
             let dats = getTop(topSelected, data, expensed);
-            let message = objTitles(getTop(topSelected, data, expensed));
-            updateAttr(dats);
-            d3.select('#wine-info').text(message)
-              .on('mouseover', function(d, i) {
-               
-              });
+            d3.select('#wine-info').selectAll('p').data(dats).enter().append('div').text(function(d){ return d.title});
+            
           }
           
         });
