@@ -29,17 +29,6 @@
       fill: none;
       stroke-width: 1px;
     }
-    .tools {
-      position: absolute;
-      text-align: center;
-      width: 60px;
-      height: 28px;
-      padding: 2px;
-      background: lightblue;
-      border: 0px;
-      border-radius: 6px;
-      pointer-events: none;
-    }
     footer {
       font: 20px;
       text-align: center;
@@ -55,536 +44,538 @@
   </style>
 </head>
 <body>
-  <header><h1>Wine in the USA</h1></header>
-  <div id="map"></div>
-  <div id="wine_filters">
-    <span>View Wines according to - - -</span>
-    <br>
-    <span>Please select an expense first and then choose the next one</span>
-    <br>
-    <div id="top-wine-selector">
-      <span>Please select a top choice: </span>
+  <div style="position: relative;">
+    <header><h1>Wine in the USA</h1></header>
+    <div id="map"></div>
+    <div id="wine_filters">
+      <span>View Wines according to - - -</span>
+      <br>
+      <span>Please select an expense first and then choose the next one</span>
+      <br>
+      <div id="top-wine-selector">
+        <span>Please select a top choice: </span>
+      </div>
+      <div id="expense-wine-selector">
+        <span>Please select an expense: </span>
+      </div>
     </div>
-    <div id="expense-wine-selector">
-      <span>Please select an expense: </span>
-    </div>
-  </div>
-  <div id='wine-info'></div>
-  <script>      
-    const getTop = function(num, data, expense) {
-      if (expense === 'Expensive'){
-        data.sort(function (a, b) {
-          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
-        });
-      } else if (expense === 'Budget'){
-        data.sort(function (a, b) {
-          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
-        });
-      } else {
-        data.sort(function(a, b) {
-          return parseFloat(b.points) - parseFloat(a.points);
-        });
+    <div id='wine-info'></div>
+    <script>      
+      const getTop = function(num, data, expense) {
+        if (expense === 'Expensive'){
+          data.sort(function (a, b) {
+            return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
+          });
+        } else if (expense === 'Budget'){
+          data.sort(function (a, b) {
+            return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
+          });
+        } else {
+          data.sort(function(a, b) {
+            return parseFloat(b.points) - parseFloat(a.points);
+          });
+        }
+        console.log(data.slice(0, num));
+        return data.slice(0, num);
       }
-      console.log(data.slice(0, num));
-      return data.slice(0, num);
-    }
-    
-    const objTitles = function (selections) {
-      let titles = [];
-      selections.forEach(function(d) {
-        for (i in d) {
-          if (i === 'title') {
-            titles.push(d[i]);
-          }
-        }
-      })
-      return titles.join('\n');
       
-    }
-    let longlat = [{
-      id: '01',
-      name: 'Alabama',
-      lat: 32.806671,
-      long: -86.791130
-    },{
-      id: '02',
-      name: 'Alaska',
-      lat: 61.370716,
-      long: -152.404419
-    },{
-      id: '04',
-      name: 'Arizona',
-      lat: 33.729759,
-      long: -111.431221
-    }, {
-      id: '05',
-      name: 'Arkansas',
-      lat: 34.969704,
-      long: -92.373123
-    },{
-      id: '06',
-      name: 'California',
-      lat: 36.116203,
-      long: -119.681564
-    },{
-      id: '08',
-      name: 'Colorado',
-      lat: 39.059811,
-      long: -105.311104
-    },{
-      id: '09',
-      name: 'Connecticut',
-      lat: 41.597782,
-      long: -105.311104
-    },{
-      id: '10',
-      name: 'Delaware',
-      lat: 39.318523,
-      long: -75.507141
-    },{
-      id: '11',
-      name: 'District of Columbia',
-      lat: 38.897438,
-      long: -77.026817
-    },{
-      id: '12',
-      name: 'Florida',
-      lat: 27.766279,
-      long: -81.686783
-    },{
-      id: '13',
-      name: 'Georgia',
-      lat: 33.040619,
-      long: -83.643074
-    }, {
-      id: '15',
-      name: 'Hawaii',
-      lat: 21.094318,
-      long: -157.498337
-    }, {
-      id: '16',
-      name: 'Idaho',
-      lat: 44.240459,
-      long: -114.478828
-    }, {
-      id: '17',
-      name: 'Illinois',
-      lat: 40.349457,
-      long: -88.986137
-    }, {
-      id: '18',
-      name: 'Indiana',
-      lat: 39.849426,
-      long: -86.258278
-    }, {
-      id: '19',
-      name: 'Iowa',
-      lat: 42.011539,
-      long: -93.210526
-    }, {
-      id: '20',
-      name: 'Kansas',
-      lat: 38.526600,
-      long: -96.726486
-    }, {
-      id: '21',
-      name: 'Kentucky',
-      lat: 37.668140,
-      long: -84.670067
-    }, {
-      id: '22',
-      name: 'Louisiana',
-      lat: 31.169546,
-      long: -91.867805
-    }, {
-      id: '23',
-      name: 'Maine',
-      lat: 44.693947,
-      long: -69.381927
-    }, {
-      id: '24',
-      name: 'Maryland',
-      lat: 39.063946,
-      long: -76.802101
-    }, {
-      id: '25',
-      name: 'Massachusetts',
-      lat: 42.230171,
-      long: -71.530106
-    }, {
-      id: '26',
-      name: 'Michigan',
-      lat: 43.326618,
-      long: -84.536095
-    }, {
-      id: '27',
-      name: 'Minnesota',
-      lat: 45.694454,
-      long: -93.900192
-    }, {
-      id: '28',
-      name: 'Mississippi',
-      lat: 32.741646,
-      long: -89.678696
-    }, {
-      id: '29',
-      name: 'Missouri',
-      lat: 38.456085,
-      long: -92.288368
-    }, {
-      id: '30',
-      name: 'Montana',
-      lat: 46.921925,
-      long: -110.454353
-    }, {
-      id: '31',
-      name: 'Nebraska',
-      lat: 41.125370,
-      long: -98.268082
-    }, {
-      id: '32',
-      name: 'Nevada',
-      lat: 38.313515,
-      long: -117.055374
-    }, {
-      id: '33',
-      name: 'New Hampshire',
-      lat: 43.452492,
-      long: -71.563896
-    }, {
-      id: '34',
-      name: 'New Jersey',
-      lat: 40.298904,
-      long: -74.521011
-    }, {
-      id: '35',
-      name: 'New Mexico',
-      lat: 34.840515,
-      long: -106.248482
-    }, {
-      id: '36',
-      name: 'New York',
-      lat: 42.165726,
-      long: -74.948051
-    }, {
-      id: '37',
-      name: 'North Carolina',
-      lat: 35.630066,
-      long: -79.806419
-    }, {
-      id: '38',
-      name: 'North Dakota',
-      lat: 47.528912,
-      long: -99.784012
-    }, {
-      id: '39',
-      name: 'Ohio',
-      lat: 40.388783,
-      long: -82.764915
-    }, {
-      id: '40',
-      name: 'Oklahoma',
-      lat: 35.565342,
-      long: -82.764915
-    }, {
-      id: '41',
-      name: 'Oregon',
-      lat: 44.572021,
-      long: -122.070938
-    }, {
-      id: '42',
-      name: 'Pennsylvania',
-      lat: 40.590752,
-      long: -77.209755
-    }, {
-      id: '44',
-      name: 'Rhode Island',
-      lat: 41.680893,
-      long: -71.511780
-    }, {
-      id: '45',
-      name: 'South Carolina',
-      lat: 33.856892,
-      long: -80.945007
-    }, {
-      id: '46',
-      name: 'South Dakota',
-      lat: 44.299782,
-      long: -99.438828
-    }, {
-      id: '47',
-      name: 'Tennessee',
-      lat: 35.747845,
-      long: -86.692345
-    }, {
-      id: '48',
-      name: 'Texas',
-      lat: 31.054487,
-      long: -97.563461
-    }, {
-      id: '49',
-      name: 'Utah',
-      lat: 40.150032,
-      long: -111.862434
-    }, {
-      id: '50',
-      name: 'Vermont',
-      lat: 44.045876,
-      long: -72.710686
-    }, {
-      id: '51',
-      name: 'Virgina',
-      lat: 37.769337,
-      long: -78.169968
-    }, {
-      id: '53',
-      name: 'Washington',
-      lat: 47.400902,
-      long: -121.490494
-    }, {
-      id: '54',
-      name: 'West Virgina',
-      lat: 38.491226,
-      long: -80.954453
-    }, {
-      id: '55',
-      name: 'Wisconsin',
-      lat: 44.268543,
-      long: -89.616508
-    }, {
-      id: '56',
-      name: 'Wyoming',
-      lat: 42.755966,
-      long: -107.302490
-    }
-    ];   
-    
-
-    let svg = d3.select("#map")
-        .append("svg")
-        .attr('width', 960)
-        .attr('height', 600);
-
-    let height = +svg.attr('height'), width = +svg.attr('width');    
+      const objTitles = function (selections) {
+        let titles = [];
+        selections.forEach(function(d) {
+          for (i in d) {
+            if (i === 'title') {
+              titles.push(d[i]);
+            }
+          }
+        })
+        return titles.join('\n');
         
-    
-            
-    let projection = d3.geoAlbersUsa()
-        .translate([width/2, height/2])
-        .scale(1000)
-
-    let path = d3.geoPath().projection(projection) 
-    
-    let color = d3.scaleThreshold()
-        .domain(d3.range(0, 10000))
-        .range(d3.schemePuBu[9]);
-
-    let x = d3.scaleLinear()
-        .domain([0, 7])
-        .rangeRound([600, 860]);
-    
-    let g = svg.append('g')
-              .attr('class', 'key')
-              .attr("transform", "translate(0,40)");
-    g.selectAll('rect')
-      .data(color.range().map(function (d) {
-        d = color.invertExtent(d);
-        if (d[0] == null) d[0] = x.domain()[0];
-        if (d[1] == null) d[1] = x.domain()[1];
-        return d;
-      }))
-      .enter().append('rect')
-        .attr('height', 8)
-        .attr('x', function (d) { return x(d[0]);})
-        .attr('width', function (d) { return x(d[1]) - x(d[0]); })
-        .attr('fill', function(d) { return color(d[0]); });
-
-    g.append('text')
-      .attr('class', 'sub')
-      .attr('x', x.range()[0])
-      .attr('y', -7)
-      .attr('fill', '#000')
-      .attr('text-anchor', 'start')
-      .attr('font-weight', 'bold')
-      .text('Quantity of Wine');
-
-    g.call(d3.axisBottom(x)
-      .tickSize(12)
-      )
-      .select('.domain')
-      .remove();
-
-    //data groups
-      let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
-        expense = ["all", "Expensive", "Budget"];
-
-      d3.select('#top-wine-selector')
-        .append('select')
-        .selectAll('myOptions')
-        .data(top_wine)
-        .enter()
-        .append('option')
-        .text(function (d) { return d })
-        .attr('value', function (d) { return d });
+      }
+      let longlat = [{
+        id: '01',
+        name: 'Alabama',
+        lat: 32.806671,
+        long: -86.791130
+      },{
+        id: '02',
+        name: 'Alaska',
+        lat: 61.370716,
+        long: -152.404419
+      },{
+        id: '04',
+        name: 'Arizona',
+        lat: 33.729759,
+        long: -111.431221
+      }, {
+        id: '05',
+        name: 'Arkansas',
+        lat: 34.969704,
+        long: -92.373123
+      },{
+        id: '06',
+        name: 'California',
+        lat: 36.116203,
+        long: -119.681564
+      },{
+        id: '08',
+        name: 'Colorado',
+        lat: 39.059811,
+        long: -105.311104
+      },{
+        id: '09',
+        name: 'Connecticut',
+        lat: 41.597782,
+        long: -105.311104
+      },{
+        id: '10',
+        name: 'Delaware',
+        lat: 39.318523,
+        long: -75.507141
+      },{
+        id: '11',
+        name: 'District of Columbia',
+        lat: 38.897438,
+        long: -77.026817
+      },{
+        id: '12',
+        name: 'Florida',
+        lat: 27.766279,
+        long: -81.686783
+      },{
+        id: '13',
+        name: 'Georgia',
+        lat: 33.040619,
+        long: -83.643074
+      }, {
+        id: '15',
+        name: 'Hawaii',
+        lat: 21.094318,
+        long: -157.498337
+      }, {
+        id: '16',
+        name: 'Idaho',
+        lat: 44.240459,
+        long: -114.478828
+      }, {
+        id: '17',
+        name: 'Illinois',
+        lat: 40.349457,
+        long: -88.986137
+      }, {
+        id: '18',
+        name: 'Indiana',
+        lat: 39.849426,
+        long: -86.258278
+      }, {
+        id: '19',
+        name: 'Iowa',
+        lat: 42.011539,
+        long: -93.210526
+      }, {
+        id: '20',
+        name: 'Kansas',
+        lat: 38.526600,
+        long: -96.726486
+      }, {
+        id: '21',
+        name: 'Kentucky',
+        lat: 37.668140,
+        long: -84.670067
+      }, {
+        id: '22',
+        name: 'Louisiana',
+        lat: 31.169546,
+        long: -91.867805
+      }, {
+        id: '23',
+        name: 'Maine',
+        lat: 44.693947,
+        long: -69.381927
+      }, {
+        id: '24',
+        name: 'Maryland',
+        lat: 39.063946,
+        long: -76.802101
+      }, {
+        id: '25',
+        name: 'Massachusetts',
+        lat: 42.230171,
+        long: -71.530106
+      }, {
+        id: '26',
+        name: 'Michigan',
+        lat: 43.326618,
+        long: -84.536095
+      }, {
+        id: '27',
+        name: 'Minnesota',
+        lat: 45.694454,
+        long: -93.900192
+      }, {
+        id: '28',
+        name: 'Mississippi',
+        lat: 32.741646,
+        long: -89.678696
+      }, {
+        id: '29',
+        name: 'Missouri',
+        lat: 38.456085,
+        long: -92.288368
+      }, {
+        id: '30',
+        name: 'Montana',
+        lat: 46.921925,
+        long: -110.454353
+      }, {
+        id: '31',
+        name: 'Nebraska',
+        lat: 41.125370,
+        long: -98.268082
+      }, {
+        id: '32',
+        name: 'Nevada',
+        lat: 38.313515,
+        long: -117.055374
+      }, {
+        id: '33',
+        name: 'New Hampshire',
+        lat: 43.452492,
+        long: -71.563896
+      }, {
+        id: '34',
+        name: 'New Jersey',
+        lat: 40.298904,
+        long: -74.521011
+      }, {
+        id: '35',
+        name: 'New Mexico',
+        lat: 34.840515,
+        long: -106.248482
+      }, {
+        id: '36',
+        name: 'New York',
+        lat: 42.165726,
+        long: -74.948051
+      }, {
+        id: '37',
+        name: 'North Carolina',
+        lat: 35.630066,
+        long: -79.806419
+      }, {
+        id: '38',
+        name: 'North Dakota',
+        lat: 47.528912,
+        long: -99.784012
+      }, {
+        id: '39',
+        name: 'Ohio',
+        lat: 40.388783,
+        long: -82.764915
+      }, {
+        id: '40',
+        name: 'Oklahoma',
+        lat: 35.565342,
+        long: -82.764915
+      }, {
+        id: '41',
+        name: 'Oregon',
+        lat: 44.572021,
+        long: -122.070938
+      }, {
+        id: '42',
+        name: 'Pennsylvania',
+        lat: 40.590752,
+        long: -77.209755
+      }, {
+        id: '44',
+        name: 'Rhode Island',
+        lat: 41.680893,
+        long: -71.511780
+      }, {
+        id: '45',
+        name: 'South Carolina',
+        lat: 33.856892,
+        long: -80.945007
+      }, {
+        id: '46',
+        name: 'South Dakota',
+        lat: 44.299782,
+        long: -99.438828
+      }, {
+        id: '47',
+        name: 'Tennessee',
+        lat: 35.747845,
+        long: -86.692345
+      }, {
+        id: '48',
+        name: 'Texas',
+        lat: 31.054487,
+        long: -97.563461
+      }, {
+        id: '49',
+        name: 'Utah',
+        lat: 40.150032,
+        long: -111.862434
+      }, {
+        id: '50',
+        name: 'Vermont',
+        lat: 44.045876,
+        long: -72.710686
+      }, {
+        id: '51',
+        name: 'Virgina',
+        lat: 37.769337,
+        long: -78.169968
+      }, {
+        id: '53',
+        name: 'Washington',
+        lat: 47.400902,
+        long: -121.490494
+      }, {
+        id: '54',
+        name: 'West Virgina',
+        lat: 38.491226,
+        long: -80.954453
+      }, {
+        id: '55',
+        name: 'Wisconsin',
+        lat: 44.268543,
+        long: -89.616508
+      }, {
+        id: '56',
+        name: 'Wyoming',
+        lat: 42.755966,
+        long: -107.302490
+      }
+      ];   
       
-      d3.select('#expense-wine-selector')
-        .append('select')
-        .selectAll('myOptions')
-        .data(expense)
-        .enter()
-        .append('option')
-        .text(function (d) { return d })
-        .attr('value', function (d) { return d });
-
-    
-    let promises = [
-      d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json"),
-      d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv")
-    ]
-
-    Promise.all(promises).then(ready)
-
-    function ready([us, data]) {
-      data.forEach(function (d) {
-        let result = longlat.filter(function (lonlat) {
-          return lonlat.name === d.province;
+  
+      let svg = d3.select("#map")
+          .append("svg")
+          .attr('width', 960)
+          .attr('height', 600);
+  
+      let height = +svg.attr('height'), width = +svg.attr('width');    
+          
+      
+              
+      let projection = d3.geoAlbersUsa()
+          .translate([width/2, height/2])
+          .scale(1000)
+  
+      let path = d3.geoPath().projection(projection) 
+      
+      let color = d3.scaleThreshold()
+          .domain(d3.range(0, 10000))
+          .range(d3.schemePuBu[9]);
+  
+      let x = d3.scaleLinear()
+          .domain([0, 7])
+          .rangeRound([600, 860]);
+      
+      let g = svg.append('g')
+                .attr('class', 'key')
+                .attr("transform", "translate(0,40)");
+      g.selectAll('rect')
+        .data(color.range().map(function (d) {
+          d = color.invertExtent(d);
+          if (d[0] == null) d[0] = x.domain()[0];
+          if (d[1] == null) d[1] = x.domain()[1];
+          return d;
+        }))
+        .enter().append('rect')
+          .attr('height', 8)
+          .attr('x', function (d) { return x(d[0]);})
+          .attr('width', function (d) { return x(d[1]) - x(d[0]); })
+          .attr('fill', function(d) { return color(d[0]); });
+  
+      g.append('text')
+        .attr('class', 'sub')
+        .attr('x', x.range()[0])
+        .attr('y', -7)
+        .attr('fill', '#000')
+        .attr('text-anchor', 'start')
+        .attr('font-weight', 'bold')
+        .text('Quantity of Wine');
+  
+      g.call(d3.axisBottom(x)
+        .tickSize(12)
+        )
+        .select('.domain')
+        .remove();
+  
+      //data groups
+        let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
+          expense = ["all", "Expensive", "Budget"];
+  
+        d3.select('#top-wine-selector')
+          .append('select')
+          .selectAll('myOptions')
+          .data(top_wine)
+          .enter()
+          .append('option')
+          .text(function (d) { return d })
+          .attr('value', function (d) { return d });
+        
+        d3.select('#expense-wine-selector')
+          .append('select')
+          .selectAll('myOptions')
+          .data(expense)
+          .enter()
+          .append('option')
+          .text(function (d) { return d })
+          .attr('value', function (d) { return d });
+  
+      
+      let promises = [
+        d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json"),
+        d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv")
+      ]
+  
+      Promise.all(promises).then(ready)
+  
+      function ready([us, data]) {
+        data.forEach(function (d) {
+          let result = longlat.filter(function (lonlat) {
+            return lonlat.name === d.province;
+          });
+          d.id = (result[0] !== undefined) ? result[0].id : null;
+          d.long = (result[0] !== undefined) ? result[0].long : null;
+          d.lat = (result[0] !== undefined) ? result[0].lat : null;
         });
-        d.id = (result[0] !== undefined) ? result[0].id : null;
-        d.long = (result[0] !== undefined) ? result[0].long : null;
-        d.lat = (result[0] !== undefined) ? result[0].lat : null;
-      });
-
-      console.log(data);
-
-      let quantityById = {};
-      data.forEach(function (d) {
-        if (d.id < 57 && d.id !== null) {
-          if (quantityById[d.id]) {
-            quantityById[d.id]++;
+  
+        console.log(data);
+  
+        let quantityById = {};
+        data.forEach(function (d) {
+          if (d.id < 57 && d.id !== null) {
+            if (quantityById[d.id]) {
+              quantityById[d.id]++;
+            } else {
+              quantityById[d.id] = 1;
+            }
+          }
+        });
+        console.log(quantityById);
+  
+      let updateAttr = (data) => {
+        let quantityById = {};
+        data.forEach(function (d) {
+          if (d.id < 57 && d.id !== null) {
+            if (quantityById[d.id]) {
+              quantityById[d.id]++;
+            } else {
+              quantityById[d.id] = 1;
+            }
+          }
+        });
+        d3.selectAll('.states')
+          .data(topojson.feature(us, us.objects.states).features)
+          .enter().append("path")
+          .attr("d", path)
+          .style('fill', function (d) {
+            return color(quantityById[d.id])
+          });
+      }  
+      
+      let tooltip = d3.select('#map')
+          .append('div')
+          .style('opacity', 0.5)
+          .attr('class', 'tooltip')
+          .style('background-color', 'lightgrey')
+          .style('width', '150px')
+          .style('border', 'solid')
+          .style('border-width', '2px')
+          .style('border-radius', '5px')
+          .style('padding', '5px')
+  
+        let mouseover = function (d) {
+          tooltip.style('opacity', 1)
+          d3.select(this)
+            .style('stroke', 'grey')
+            .style('opacity', 1)
+        }
+  
+        let mousemove = function (d) {
+          console.log(d)
+          if (quantityById[d.id] === undefined) {
+            tooltip.html('There is no wine here in ' + d.properties.name)
+          } else if (quantityById[d.id] === 1) {
+            tooltip.html('There is ' + quantityById[d.id] + ' type of wine here in ' + d.properties.name)
           } else {
-            quantityById[d.id] = 1;
+            tooltip.html('There are ' + quantityById[d.id] + ' types of wine here in ' + d.properties.name)
+              .style('left', (d3.mouse(this)[0]+70) + 'px')
+              .style('top', (d3.mouse(this)[1]) + 'px')
           }
         }
-      });
-      console.log(quantityById);
-
-    let updateAttr = (data) => {
-      let quantityById = {};
-      data.forEach(function (d) {
-        if (d.id < 57 && d.id !== null) {
-          if (quantityById[d.id]) {
-            quantityById[d.id]++;
-          } else {
-            quantityById[d.id] = 1;
-          }
+  
+        let mouseleave = function(d) {
+          tooltip.style('opacity', 0)
+          d3.select(this)
+            .style('stroke', 'black')
+            .style('opacity', 1)
         }
-      });
-      d3.selectAll('.states')
-        .data(topojson.feature(us, us.objects.states).features)
-        .enter().append("path")
-        .attr("d", path)
-        .style('fill', function (d) {
-          return color(quantityById[d.id])
-        });
-    }  
-    
-    let tooltip = d3.select('#map')
-        .append('div')
+  
+      let wineInfo = d3.select('#wine-info')
         .style('opacity', 0.5)
-        .attr('class', 'tooltip')
-        .style('background-color', 'lightgrey')
-        .style('width', '150px')
+        .style('width', '550px')
+        .style('background-color', 'lightblue')
         .style('border', 'solid')
         .style('border-width', '2px')
         .style('border-radius', '5px')
         .style('padding', '5px')
-
-      let mouseover = function (d) {
-        tooltip.style('opacity', 1)
-        d3.select(this)
-          .style('stroke', 'grey')
-          .style('opacity', 1)
-      }
-
-      let mousemove = function (d) {
-        console.log(d)
-        if (quantityById[d.id] === undefined) {
-          tooltip.html('There is no wine here in ' + d.properties.name)
-        } else if (quantityById[d.id] === 1) {
-          tooltip.html('There is ' + quantityById[d.id] + ' type of wine here in ' + d.properties.name)
-        } else {
-          tooltip.html('There are ' + quantityById[d.id] + ' types of wine here in ' + d.properties.name)
-            .style('left', (d3.mouse(this)[0]+70) + 'px')
-            .style('top', (d3.mouse(this)[1]) + 'px')
-        }
-      }
-
-      let mouseleave = function(d) {
-        tooltip.style('opacity', 0)
-        d3.select(this)
-          .style('stroke', 'black')
-          .style('opacity', 1)
-      }
-
-    let wineInfo = d3.select('#wine-info')
-      .style('opacity', 0.5)
-      .style('width', '550px')
-      .style('background-color', 'lightblue')
-      .style('border', 'solid')
-      .style('border-width', '2px')
-      .style('border-radius', '5px')
-      .style('padding', '5px')
-      .style('white-space', 'pre-wrap')
-
-    svg.append('g')
-        .attr('class', 'states')
-        .selectAll("path")
-        .data(topojson.feature(us, us.objects.states).features)
-        .enter().append("path")
-        .attr("d", path)
-        .attr('fill', function (d) {
-          return color(quantityById[d.id]);
-        })
-        .on('mouseover', mouseover)  
-        .on('mousemove', mousemove)
-        .on('mouseleave', mouseleave)
+        .style('white-space', 'pre-wrap')
+  
+      svg.append('g')
+          .attr('class', 'states')
+          .selectAll("path")
+          .data(topojson.feature(us, us.objects.states).features)
+          .enter().append("path")
+          .attr("d", path)
+          .attr('fill', function (d) {
+            return color(quantityById[d.id]);
+          })
+          .on('mouseover', mouseover)  
+          .on('mousemove', mousemove)
+          .on('mouseleave', mouseleave)
+          
+      d3.select('select')
+        .on('change', function (d, i) {
+          let topSelected = d3.select('#top-wine-selector option:checked').node().value;
+          let expensed = d3.select('#expense-wine-selector option:checked').node().value;
+          if (topSelected) {
+            let dats = getTop(topSelected, data, expensed);
+            let message = objTitles(getTop(topSelected, data, expensed));
+            updateAttr(dats);
+            d3.select('#wine-info').text(message)
+              .on('mouseover', function(d, i) {
+               
+              });
+          }
+          
+        });
+  
         
-    d3.select('select')
-      .on('change', function (d, i) {
-        let topSelected = d3.select('#top-wine-selector option:checked').node().value;
-        let expensed = d3.select('#expense-wine-selector option:checked').node().value;
-        if (topSelected) {
-          let dats = getTop(topSelected, data, expensed);
-          let message = objTitles(getTop(topSelected, data, expensed));
-          updateAttr(dats);
-          d3.select('#wine-info').text(message)
-            .on('mouseover', function(d, i) {
-             
-            });
-        }
+      
+          
+  
         
-      });
-
-      
-    
         
-
+      }
       
       
-    }
-    
-    
-
+  
+        
       
-    
-
-    
-
-  </script>
-  <footer style='width: 100%; background: red; position: absolute; bottom: 0;'>
-      <a style='color: white;' href='https://jeanwooha.me'>Portfolio</a>
-      <a style='color: white;' href='https://linkedin.com/in/jeanha124'>LinkedIn</a>
-      <a style='color: white;' href='https://github.com/jeanha124'>Github</a>
-  </footer>
+  
+      
+  
+    </script>
+    <footer style='width: 100%; background: red; position: relative; bottom: 0;'>
+        <a style='color: white;' href='https://jeanwooha.me'>Portfolio</a>
+        <a style='color: white;' href='https://linkedin.com/in/jeanha124'>LinkedIn</a>
+        <a style='color: white;' href='https://github.com/jeanha124'>Github</a>
+    </footer>
+  </div>
 </body>
 </html>
