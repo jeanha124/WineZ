@@ -34,7 +34,7 @@
       text-align: center;
     }
 
-    #wine_info {
+    .wine_info {
       border: 1px solid black;
       position: relative;
       padding: 8px;
@@ -60,7 +60,7 @@
       </div>
     </div>
     <div style="display:flex;">
-      <div id='wine-info'></div>
+      <div class='wine-info'></div>
       <div id='info'></div>
     </div>
     <script>      
@@ -447,22 +447,25 @@
         });
   
       let updateAttr = (data) => {
-        let quantityById = {};
+        quantityById = {};
         data.forEach(function (d) {
-          if (d.id < 57 && d.id !== null) {
+          if (d.id < 57 && d.id !== null && d.id !== undefined) {
             if (quantityById[d.id]) {
               quantityById[d.id]++;
             } else {
               quantityById[d.id] = 1;
             }
           }
+          
         });
         d3.selectAll('.states')
           .data(topojson.feature(us, us.objects.states).features)
           .enter().append("path")
           .attr("d", path)
           .style('fill', function (d) {
-            return color(quantityById[d.id])
+            if (quantityById[d.id] !== undefined){
+              return color(quantityById[d.id])
+            }
           });
       }  
       
@@ -505,7 +508,7 @@
             .style('opacity', 1)
         }
   
-      let wineInfo = d3.select('#wine-info')
+      let wineInfo = d3.select('.wine-info')
         .style('opacity', 0.5)
         .style('width', '550px')
         .style('background-color', 'lightblue')
@@ -535,8 +538,8 @@
           .style('opactiy', 1)
       } 
       let mousemove2 = function (d, i) {
-        winehover.html('Wine Name: ' + d.title + '\n' + 'Wine Description: ' + d.description + '\n' + 'Wine Variety: ' +
-        d.variety + '\n' + 'Wine Quality: ' + d.points + '%' + '\n' + 'Wine Price: $' + d.price)
+        winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n' + '<b>Wine Variety:</b> ' +
+        d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
       } 
       let mouseleave2 = function (d) {
           winehover.style('opacity', 0)
@@ -556,23 +559,26 @@
           .on('mouseover', mouseover)  
           .on('mousemove', mousemove)
           .on('mouseleave', mouseleave)
-          
+      
+    
+
       d3.select('select')
         .on('change', function (d, i) {
           let topSelected = d3.select('#top-wine-selector option:checked').node().value;
           let expensed = d3.select('#expense-wine-selector option:checked').node().value;
           if (topSelected) {
             let dats = getTop(topSelected, data, expensed);
-            d3.select('#wine-info')
-              .selectAll('p')
+            updateAttr(dats)
+            d3.select('.wine-info')
+              .selectAll('#info')
               .data(dats)
               .enter().append('div')
               .text(function(d){ return d.title})
               .on('mouseover', mouseover2)
-              .on('mousemove', mousemove2);    
+              .on('mousemove', mousemove2)  
               
           }
-
+          
           
         });
   
