@@ -466,6 +466,7 @@
           });
       }  
       
+      
       let tooltip = d3.select('#map')
           .append('div')
           .style('opacity', 0.5)
@@ -475,6 +476,7 @@
           .style('border', 'solid')
           .style('border-width', '2px')
           .style('border-radius', '5px')
+          .style('position', 'absolute')
           .style('padding', '5px')
   
         let mouseover = function (d) {
@@ -491,8 +493,8 @@
             tooltip.html('There is ' + quantityById[d.id] + ' type of wine here in ' + d.properties.name)
           } else {
             tooltip.html('There are ' + quantityById[d.id] + ' types of wine here in ' + d.properties.name)
-              .style('left', (d3.mouse(this)[0]+70) + 'px')
-              .style('top', (d3.mouse(this)[1]) + 'px')
+              .style('left', (d3.mouse(this)[0] - 34) + 'px')
+              .style('top', (d3.mouse(this)[1] - 12) + 'px')
           }
         }
   
