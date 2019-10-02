@@ -58,6 +58,7 @@
       <div id="expense-wine-selector">
         <span>Please select an expense: </span>
       </div>
+      <button>Reset</button>
     </div>
     <div style="display:flex;">
       <div class='wine-info'></div>
@@ -583,7 +584,9 @@
         });
   
         
-      
+      d3.select('button').on('click', function () {
+        d3.select('.wine-info').selectAll('div').remove();
+      })
           
   
         
