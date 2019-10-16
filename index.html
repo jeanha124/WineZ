@@ -6,12 +6,13 @@
   <title>Wine in the USA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
   <!-- <script src="https://maps.google.com/maps/api/js?sensor=true"></script> -->
   <script src="https://d3js.org/topojson.v2.min.js"></script>
   <script src="http://d3js.org/d3-queue.v2.min.js"></script>
   <script src="http://d3js.org/d3-geo-projection.v2.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
   <style>
     header {
       text-align: center;
@@ -46,7 +47,7 @@
 <body>
   <div style="position: relative;">
     <header><h1>Wine in the USA</h1></header>
-    <div id="map"></div>
+    <div id="map" style="width: '900'; height: '600';"></div>
     <div id="wine_filters">
       <span>View Wines according to - - -</span>
       <br>
@@ -60,6 +61,7 @@
       </div>
       <button>Reset</button>
     </div>
+    <div id="legend"></div>
     <div style="display:flex;">
       <div class='wine-info'></div>
       <div id='info'></div>
@@ -81,7 +83,7 @@
         }
         return data.slice(0, num);
       }
-      
+      let outData = null;
       let longlat = [{
         id: '01',
         name: 'Alabama',
@@ -340,15 +342,19 @@
       }
       ];   
       
+     
   
-      let svg = d3.select("#map")
-          .append("svg")
-          .attr('width', 960)
-          .attr('height', 600);
-  
-      let height = +svg.attr('height'), width = +svg.attr('width');    
-          
+      let svg = d3.select('body').select("#map")
+      .append("svg")
+      .attr('width', 960)
+      .attr('height', 600);
       
+      let height = +svg.attr('height'), width = +svg.attr('width');    
+      
+     
+
+          
+      let mouseover2 = null, mousemove2 = null, mouseleave2 = null, wineinfo = null, winehover = null;
               
       let projection = d3.geoAlbersUsa()
           .translate([width/2, height/2])
@@ -357,16 +363,17 @@
       let path = d3.geoPath().projection(projection) 
       
       let color = d3.scaleThreshold()
-          .domain(d3.range(0, 10000))
+          .domain(d3.range(0, 100))
           .range(d3.schemePuBu[9]);
   
       let x = d3.scaleLinear()
-          .domain([0, 7])
+          .domain([0, 10, 25, 50, 100])
           .rangeRound([600, 860]);
       
       let g = svg.append('g')
                 .attr('class', 'key')
                 .attr("transform", "translate(0,40)");
+
       g.selectAll('rect')
         .data(color.range().map(function (d) {
           d = color.invertExtent(d);
@@ -417,184 +424,253 @@
           .text(function (d) { return d })
           .attr('value', function (d) { return d });
   
-      
-      let promises = [
-        d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json"),
-        d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv")
-      ]
-  
-      Promise.all(promises).then(ready)
-  
-      function ready([us, data]) {
-        data.forEach(function (d) {
-          let result = longlat.filter(function (lonlat) {
-            return lonlat.name === d.province;
-          });
-          d.id = (result[0] !== undefined) ? result[0].id : null;
-          d.long = (result[0] !== undefined) ? result[0].long : null;
-          d.lat = (result[0] !== undefined) ? result[0].lat : null;
-        });
-  
-  
-        let quantityById = {};
-        data.forEach(function (d) {
-          if (d.id < 57 && d.id !== null) {
-            if (quantityById[d.id]) {
-              quantityById[d.id]++;
-            } else {
-              quantityById[d.id] = 1;
-            }
-          }
-        });
-  
-      let updateAttr = (data) => {
-        quantityById = {};
-        data.forEach(function (d) {
-          if (d.id < 57 && d.id !== null && d.id !== undefined) {
-            if (quantityById[d.id]) {
-              quantityById[d.id]++;
-            } else {
-              quantityById[d.id] = 1;
-            }
-          }
-          
-        });
-        d3.selectAll('.states')
-          .data(topojson.feature(us, us.objects.states).features)
-          .enter().append("path")
-          .attr("d", path)
-          .style('fill', function (d) {
-            if (quantityById[d.id] !== undefined){
-              return color(quantityById[d.id])
-            }
-          });
-      }  
-      
-      
-      let tooltip = d3.select('#map')
-          .append('div')
-          .style('opacity', 0.5)
-          .attr('class', 'tooltip')
-          .style('background-color', 'lightgrey')
-          .style('width', '150px')
-          .style('border', 'solid')
-          .style('border-width', '2px')
-          .style('border-radius', '5px')
-          .style('position', 'absolute')
-          .style('padding', '5px')
-  
-        let mouseover = function (d) {
-          tooltip.style('opacity', 1)
-          d3.select(this)
-            .style('stroke', 'grey')
-            .style('opacity', 1)
+      let colorCodes = {
+        "all" : {
+          "keys" : [0, 10, 100, 1000, 10000],
+          "labels" : ["0-9", "10-99", "100-999", "1000-9999", "10000+"],
+          "values" : ['#bfefff', '#87ceeb', '#42c0fb', '#236b8e', '#5d92b1'],
+          "title" : "All Wine"
+        },
+        "5" : {
+          "keys" : [0, 1, 2, 3],
+          "labels" : ["0", "1", "2", "3"],
+          "values" : ['#b0c4de', '#7eb6ff', '#5993e5', '#2b4f81'],
+          "title" : "Top 5"
+        },
+        "10" : {
+          "keys" : [0, 2, 4, 6, 8],
+          "labels" : ["0-1", "2-3", "4-5", "6-7", "8+"],
+          "values" : ['#bfefff', '#87ceeb', '#42c0fb', '#236b8e', '#5d92b1'],
+          "title" : "Top 10"
+        },
+        "15" : {
+          "keys" : [0, 3, 6, 9, 12],
+          "labels" : ["0-2", "3-5", "6-8", "9-11", "12+"],
+          "values" : ['#bfefff', '#87ceeb', '#42c0fb', '#236b8e', '#5d92b1'],
+          "title" : "Top 15"
+        },
+        "20" : {
+          "keys" : [0, 5, 10, 15],
+          "labels" : ["0-4", "5-9", "10-14", "15+"],
+          "values" : ['#b0c4de', '#7eb6ff', '#5993e5', '#2b4f81'],
+          "title" : "Top 20"
+        },
+        "50" : {
+          "keys": [0, 5, 10, 15, 20],
+          "labels": ["0-4", "5-9", "10-14", "15-19", "20+"],
+          "values": ['#bfefff', '#87ceeb', '#42c0fb', '#236b8e', '#5d92b1'],
+          "title": "Top 50"
+        },
+        "100" : {
+          "keys": [0, 5, 10, 15, 20, 40],
+          "labels": ["0-4", "5-9", "10-14", "15-19", "20-39", "40+"],
+          "values": ['#bfefff', '#87ceeb', '#42c0fb', '#236b8e', '#5d92b1', '#162252'],
+          "title": "Top 100"
         }
-  
-        let mousemove = function (d) {
-          if (quantityById[d.id] === undefined) {
-            tooltip.html('There is no wine here in ' + d.properties.name)
-          } else if (quantityById[d.id] === 1) {
-            tooltip.html('There is ' + quantityById[d.id] + ' type of wine here in ' + d.properties.name)
-          } else {
-            tooltip.html('There are ' + quantityById[d.id] + ' types of wine here in ' + d.properties.name)
-              .style('left', (d3.mouse(this)[0] - 34) + 'px')
-              .style('top', (d3.mouse(this)[1] - 12) + 'px')
-          }
-        }
-  
-        let mouseleave = function(d) {
-          tooltip.style('opacity', 0)
-          d3.select(this)
-            .style('stroke', 'black')
-            .style('opacity', 1)
-        }
-  
-      let wineInfo = d3.select('.wine-info')
-        .style('opacity', 0.5)
-        .style('width', '550px')
-        .style('background-color', 'lightblue')
-        .style('border', 'solid')
-        .style('border-width', '2px')
-        .style('border-radius', '5px')
-        .style('padding', '5px')
-        .style('white-space', 'pre-wrap')
-      
-      let winehover = d3.select('#info')
-        .append('div')
-        .style('opacity', 0.5)
-        .attr('class', 'winefo')
-        .style('background-color', 'white')
-        .style('width', '500px')
-        .style('border', 'solid')
-        .style('border-width', '2px')
-        .style('border-radius', '5px')
-        .style('padding', '5px')
-        .style('white-space', 'pre-wrap')
-        
-
-      let mouseover2 = function(d) {
-        winehover.style('opactiy', 1)
-        d3.select(this)
-          .style('stroke', 'green')
-          .style('opactiy', 1)
-      } 
-      let mousemove2 = function (d, i) {
-        winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n' + '<b>Wine Variety:</b> ' +
-        d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
-      } 
-      let mouseleave2 = function (d) {
-          winehover.style('opacity', 0)
-          d3.select(this)
-            .style('stroke', 'black')
-            .style('opacity', 1)
-        }
-      svg.append('g')
-          .attr('class', 'states')
-          .selectAll("path")
-          .data(topojson.feature(us, us.objects.states).features)
-          .enter().append("path")
-          .attr("d", path)
-          .attr('fill', function (d) {
-            return color(quantityById[d.id]);
-          })
-          .on('mouseover', mouseover)  
-          .on('mousemove', mousemove)
-          .on('mouseleave', mouseleave)
-      
+      }
     
+      
+        function updateMap(selectedVal, newData = null) {
+        d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json", function(error, us) {
+          if (error) throw error;
+           
+          
+          if (newData === null) {
+            let color = d3.scaleThreshold()
+              .domain(colorCodes[selectedVal].keys)
+              .range(colorCodes[selectedVal].values);
 
-      d3.select('select')
-        .on('change', function (d, i) {
+            d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", function (error, data) {
+              data.forEach(function (d) {
+                let result = longlat.filter(function (lonlat) {
+                  return lonlat.name === d.province;
+                });
+                d.id = (result[0] !== undefined) ? result[0].id : null;
+                d.long = (result[0] !== undefined) ? result[0].long : null;
+                d.lat = (result[0] !== undefined) ? result[0].lat : null;
+              });
+
+              let quantityById = {};
+              data.forEach(function (d) {
+                if (d.id < 57 && d.id !== null) {
+                  if (quantityById[d.id]) {
+                    quantityById[d.id]++;
+                  } else {
+                    quantityById[d.id] = 1;
+                  }
+                }
+              });
+              
+              outData = data;
+              svg.append('g')
+                .attr('class', 'states')
+                .selectAll('path')
+                .data(topojson.feature(us, us.objects.states).features)
+                .enter().append("path")
+                .attr("d", path)
+                .attr('class', 'state')
+                .style('fill', function (d) {
+                  if (quantityById[d.id] !== undefined) {
+                    return color(quantityById[d.id])
+                  }
+                })
+                .style('stroke', 'black')
+                .style('stroke-width', '2');
+
+              //remove prev elements
+              svg.exit().remove();
+            });  
+          } else {
+            data = newData;
+            data.forEach(function (d) {
+              let result = longlat.filter(function (lonlat) {
+                return lonlat.name === d.province;
+              });
+              d.id = (result[0] !== undefined) ? result[0].id : null;
+              d.long = (result[0] !== undefined) ? result[0].long : null;
+              d.lat = (result[0] !== undefined) ? result[0].lat : null;
+            });
+
+            let quantityById = {};
+            data.forEach(function (d) {
+              if (d.id < 57 && d.id !== null) {
+                if (quantityById[d.id]) {
+                  quantityById[d.id]++;
+                } else {
+                  quantityById[d.id] = 1;
+                }
+              }
+            });
+            console.log(data, quantityById)
+            let tooltip = d3.select('body').select('#map')
+              .append('div').style('opacity', 0.5)
+              .attr('class', 'tooltip')
+              .style('background-color', 'lightgrey')
+              .style('width', '150px')
+              .style('border', 'solid')
+              .style('border-width', '2px')
+              .style('border-radius', '5px')
+              .style('position', 'absolute')
+              .style('padding', '5px')
+            let mouseover = function (d) {
+              tooltip.style('opacity', 1)
+              d3.select(this)
+                .style('stroke', 'grey')
+                .style('opacity', 1)
+            }
+            let mousemove = function (d) {
+              if (quantityById[d.id] === undefined) {
+                tooltip.html('There is no wine here in ' + d.properties.name)
+              } else if (quantityById[d.id] === 1) {
+                tooltip.html(' There is ' + quantityById[d.id] + ' type of wine here in ' + d.properties.name)
+              } else {
+                tooltip.html(' There are ' + quantityById[d.id] + ' types of wine here in ' + d.properties.name)
+                  .style(' left', (d3.mouse(this)[0] - 34) + 'px')
+                  .style('top', (d3.mouse(this)[1] - 12) + 'px')
+              }
+            }
+            let mouseleave = function (d) {
+              tooltip.style('opacity', 0)
+              d3.select(this)
+                .style('stroke', 'black').style('opacity', 1)
+            }
+
+            wineInfo = d3.select('.wine-info')
+              .style('opacity', 0.5)
+              .style('width', '550px')
+              .style('background-color', 'lightblue')
+              .style('border', 'solid')
+              .style('border-width', '2px')
+              .style('border-radius', '5px')
+              .style('padding', '5px')
+              .style('white-space', 'pre-wrap')
+            winehover = d3.select('#info')
+              .append('div')
+              .style('opacity', 0.5)
+              .attr('class', 'winefo')
+              .style('background-color', 'white')
+              .style('width', '500px')
+              .style('border', 'solid')
+              .style('border-width', '2px')
+              .style('border-radius', '5px')
+              .style('padding', '5px')
+              .style('white-space', 'pre-wrap')
+
+            mouseover2 = function (d) { 
+              winehover.style('opactiy', 1) 
+              d3.select(this)
+                .style('stroke', 'green')
+                .style('opactiy', 1) 
+            } 
+            
+            mousemove2 = function(d, i) {
+              winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n'+ '<b>Wine Variety:</b> ' +
+              d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
+              }
+
+            mouseleave2 = function (d) {
+              winehover.style('opacity', 0)
+              d3.select(this)
+                .style('stroke', 'black')
+                .style('opacity', 1)
+            }
+            svg.append('g')
+              .attr('class', 'states')
+              .selectAll('path')
+              .data(topojson.feature(us, us.objects.states).features)
+              .enter().append("path")
+              .attr("d", path)
+              .attr('class', 'state')
+              .style('fill', function (d) {
+                if (quantityById[d.id] !== undefined) {
+                  return color(quantityById[d.id])
+                }
+              })
+              .style('stroke', 'black')
+              .style('stroke-width', '2')
+              .on('mouseover', mouseover)
+              .on('mousemove', mousemove)
+              .on('mouseleave', mouseleave);
+
+            //remove prev elements
+            svg.exit().remove();
+          }
+        });
+      }
+
+      
+      updateMap("all");
+      
+      d3.select('body').select('button').on('click', function () {
+        d3.select('.wine-info').selectAll('div').remove();
+        winehover.remove();
+      })
+
+      d3.select('#top-wine-selector')
+        .on("change", function() {
           let topSelected = d3.select('#top-wine-selector option:checked').node().value;
           let expensed = d3.select('#expense-wine-selector option:checked').node().value;
-          if (topSelected) {
-            let dats = getTop(topSelected, data, expensed);
-            updateAttr(dats)
+          if (topSelected !== 'all') {
+            let dats = getTop(topSelected, outData, expensed);
+            let name = document.getElementById('top-wine-selector').value;
+  
+            
             d3.select('.wine-info')
-              .selectAll('#info')
-              .data(dats)
-              .enter().append('div')
-              .text(function(d){ return d.title})
-              .on('mouseover', mouseover2)
-              .on('mousemove', mousemove2)  
-              
+            .selectAll('#info')
+            .data(dats)
+            .enter().append('div')
+            .text(function (d) { return d.title })
+            .on('mouseover', mouseover2)
+            .on('mousemove', mousemove2)
+            
+            updateMap(name, dats);
+          } else {
+            
+            updateMap("all");
           }
-          
-          
         });
-  
-        
-      d3.select('button').on('click', function () {
-        d3.select('.wine-info').selectAll('div').remove();
-      })
-          
-  
-        
-        
-      }
       
       
-  
         
       
   
@@ -609,3 +685,131 @@
   </div>
 </body>
 </html>
+
+<!-- function ready([us, data]) {
+data.forEach(function (d) {
+let result = longlat.filter(function (lonlat) {
+return lonlat.name === d.province;
+});
+d.id = (result[0] !== undefined) ? result[0].id : null;
+d.long = (result[0] !== undefined) ? result[0].long : null;
+d.lat = (result[0] !== undefined) ? result[0].lat : null;
+});
+
+
+let quantityById = {};
+data.forEach(function (d) {
+if (d.id < 57 && d.id !==null) { if (quantityById[d.id]) { quantityById[d.id]++; } else { quantityById[d.id]=1; } } });
+  let updateAttr=(data)=> {
+  quantityById = {};
+  data.forEach(function (d) {
+  if (d.id < 57 && d.id !==null && d.id !==undefined) { if (quantityById[d.id]) { quantityById[d.id]++; } else {
+    quantityById[d.id]=1; } } }); d3.selectAll('.states') .data(topojson.feature(us, us.objects.states).features)
+    .enter().append("path") .attr("d", path) .style('fill', function (d) { if (quantityById[d.id] !==undefined){ return
+    color(quantityById[d.id]) } }); } let tooltip=d3.select('#map') .append('div') .style('opacity', 0.5)
+    .attr('class', 'tooltip' ) .style('background-color', 'lightgrey' ) .style('width', '150px' ) .style('border',
+    'solid' ) .style('border-width', '2px' ) .style('border-radius', '5px' ) .style('position', 'absolute' )
+    .style('padding', '5px' ) let mouseover=function (d) { tooltip.style('opacity', 1) d3.select(this) .style('stroke',
+    'grey' ) .style('opacity', 1) } let mousemove=function (d) { if (quantityById[d.id]===undefined) {
+    tooltip.html('There is no wine here in
+    ' + d.properties.name)
+          } else if (quantityById[d.id] === 1) {
+            tooltip.html(' There is
+    ' + quantityById[d.id] + ' type of wine here in
+    ' + d.properties.name)
+          } else {
+            tooltip.html(' There are ' + quantityById[d.id] + ' types of
+    wine here in ' + d.properties.name)
+              .style(' left', (d3.mouse(this)[0] - 34) + 'px' ) .style('top',
+    (d3.mouse(this)[1] - 12) + 'px' ) } } let mouseleave=function(d) { tooltip.style('opacity', 0) d3.select(this)
+    .style('stroke', 'black' ) .style('opacity', 1) } let wineInfo=d3.select('.wine-info') .style('opacity', 0.5)
+    .style('width', '550px' ) .style('background-color', 'lightblue' ) .style('border', 'solid' )
+    .style('border-width', '2px' ) .style('border-radius', '5px' ) .style('padding', '5px' ) .style('white-space',
+    'pre-wrap' ) let winehover=d3.select('#info') .append('div') .style('opacity', 0.5) .attr('class', 'winefo' )
+    .style('background-color', 'white' ) .style('width', '500px' ) .style('border', 'solid' ) .style('border-width',
+    '2px' ) .style('border-radius', '5px' ) .style('padding', '5px' ) .style('white-space', 'pre-wrap' ) let mouseover2=function(d)
+    { winehover.style('opactiy', 1) d3.select(this) .style('stroke', 'green' ) .style('opactiy', 1) } let mousemove2=function
+    (d, i) { winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n'
+    + '<b>Wine Variety:</b> ' +
+    d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
+    }
+    let mouseleave2 = function (d) {
+    winehover.style('opacity', 0)
+    d3.select(this)
+    .style('stroke', 'black')
+    .style('opacity', 1)
+    }
+    svg.append('g')
+    .attr('class', 'states')
+    .selectAll("path")
+    .data(topojson.feature(us, us.objects.states).features)
+    .enter().append("path")
+    .attr("d", path)
+    .attr('fill', function (d) {
+    return color(quantityById[d.id]);
+    })
+    .on('mouseover', mouseover)
+    .on('mousemove', mousemove)
+    .on('mouseleave', mouseleave)
+
+
+
+    d3.select('select')
+    .on('change', function (d, i) {
+    let topSelected = d3.select('#top-wine-selector option:checked').node().value;
+    let expensed = d3.select('#expense-wine-selector option:checked').node().value;
+    if (topSelected) {
+    let dats = getTop(topSelected, data, expensed);
+    updateAttr(dats)
+    d3.select('.wine-info')
+    .selectAll('#info')
+    .data(dats)
+    .enter().append('div')
+    .text(function(d){ return d.title})
+    .on('mouseover', mouseover2)
+    .on('mousemove', mousemove2)
+    }
+
+
+    });
+
+
+    d3.select('button').on('click', function () {
+    d3.select('.wine-info').selectAll('div').remove();
+    })
+
+
+
+
+    } -->
+
+    <!-- function updateLegend(selectedVal) {
+    let color = d3.scaleThreshold()
+    .domain(colorCodes[selectedVal].keys)
+    .range(colorCodes[selectedVal].values);
+    
+    legend.append('g')
+    .attr('class', 'legendTip')
+    .attr('transform', 'translate(20, 20)');
+    
+    let colorLegend = d3.legendColor()
+    .shapePadding(10)
+    .shapeWidth(30)
+    .shapeHeight(10)
+    .orient('vertical')
+    .scale(color)
+    .labels(colorCodes[selectedVal].labels)
+    .title(colorCodes[selectedVal].title);
+    
+    legend.select('.colorLegend').call(colorLegend);
+    
+    legend.exit().remove();
+    }
+    updateLegend("all"); -->
+
+    <!-- updateLegend("all"); -->
+<!-- 
+    let legend = d3.select('body').select('#legend')
+    .append('svg')
+    .attr('height', height - 100)
+    .attr('width', 200); -->
