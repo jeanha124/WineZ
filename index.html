@@ -48,6 +48,7 @@
   <div style="position: relative;">
     <header><h1>Wine in the USA</h1></header>
     <div id="map" style="width: '900'; height: '600';"></div>
+    <br>
     <div id="wine_filters">
       <span>View Wines according to - - -</span>
       <br>
@@ -347,11 +348,16 @@
       let svg = d3.select('body').select("#map")
       .append("svg")
       .attr('width', 960)
-      .attr('height', 600);
+      .attr('height', 600)
+      .style('float', 'left');
       
       let height = +svg.attr('height'), width = +svg.attr('width');    
       
      
+      let legend = d3.select('body').select('#legend')
+          .append('svg')
+          .attr('height', height - 100)
+          .attr('width', 200);
 
           
       let mouseover2 = null, mousemove2 = null, mouseleave2 = null, wineinfo = null, winehover = null;
@@ -362,45 +368,7 @@
   
       let path = d3.geoPath().projection(projection) 
       
-      let color = d3.scaleThreshold()
-          .domain(d3.range(0, 100))
-          .range(d3.schemePuBu[9]);
-  
-      let x = d3.scaleLinear()
-          .domain([0, 10, 25, 50, 100])
-          .rangeRound([600, 860]);
       
-      let g = svg.append('g')
-                .attr('class', 'key')
-                .attr("transform", "translate(0,40)");
-
-      g.selectAll('rect')
-        .data(color.range().map(function (d) {
-          d = color.invertExtent(d);
-          if (d[0] == null) d[0] = x.domain()[0];
-          if (d[1] == null) d[1] = x.domain()[1];
-          return d;
-        }))
-        .enter().append('rect')
-          .attr('height', 8)
-          .attr('x', function (d) { return x(d[0]);})
-          .attr('width', function (d) { return x(d[1]) - x(d[0]); })
-          .attr('fill', function(d) { return color(d[0]); });
-  
-      g.append('text')
-        .attr('class', 'sub')
-        .attr('x', x.range()[0])
-        .attr('y', -7)
-        .attr('fill', '#000')
-        .attr('text-anchor', 'start')
-        .attr('font-weight', 'bold')
-        .text('Quantity of Wine');
-  
-      g.call(d3.axisBottom(x)
-        .tickSize(12)
-        )
-        .select('.domain')
-        .remove();
   
       //data groups
         let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
@@ -473,13 +441,11 @@
         function updateMap(selectedVal, newData = null) {
         d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json", function(error, us) {
           if (error) throw error;
-           
+           let color = d3.scaleThreshold()
+            .domain(colorCodes[selectedVal].keys)
+            .range(colorCodes[selectedVal].values);
           
           if (newData === null) {
-            let color = d3.scaleThreshold()
-              .domain(colorCodes[selectedVal].keys)
-              .range(colorCodes[selectedVal].values);
-
             d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", function (error, data) {
               data.forEach(function (d) {
                 let result = longlat.filter(function (lonlat) {
@@ -521,6 +487,7 @@
               svg.exit().remove();
             });  
           } else {
+            console.log(colorCodes[selectedVal])
             data = newData;
             data.forEach(function (d) {
               let result = longlat.filter(function (lonlat) {
@@ -636,180 +603,231 @@
             svg.exit().remove();
           }
         });
-      }
 
+      }
+      function updateLegend(selectedVal) {
+          let color = d3.scaleThreshold()
+            .domain(colorCodes[selectedVal].keys)
+            .range(colorCodes[selectedVal].values);
+
+          legend.append('g')
+            .attr('class', 'legendTip')
+            .attr('transform', 'translate(20, 20)');
+
+          let colorLegend = d3.legendColor()
+            .orient('vertical')
+            .shapePadding(10)
+            .shapeWidth(30)
+            .shapeHeight(10)
+            .scale(color)
+            .labels(colorCodes[selectedVal].labels)
+            .title(colorCodes[selectedVal].title);
+
+          legend.select('.legendTip').call(colorLegend);
+
+          legend.exit().remove();
+        }
       
-      updateMap("all");
+        updateLegend("all");
+        updateMap("all");
       
       d3.select('body').select('button').on('click', function () {
         d3.select('.wine-info').selectAll('div').remove();
         winehover.remove();
       })
-
+      
       d3.select('#top-wine-selector')
         .on("change", function() {
           let topSelected = d3.select('#top-wine-selector option:checked').node().value;
           let expensed = d3.select('#expense-wine-selector option:checked').node().value;
           if (topSelected !== 'all') {
             let dats = getTop(topSelected, outData, expensed);
-            let name = document.getElementById('top-wine-selector').value;
-  
-            
+
             d3.select('.wine-info')
-            .selectAll('#info')
-            .data(dats)
-            .enter().append('div')
-            .text(function (d) { return d.title })
-            .on('mouseover', mouseover2)
-            .on('mousemove', mousemove2)
+              .selectAll('#info')
+              .data(dats)
+              .enter().append('div')
+              .text(function (d) { return d.title })
+              .on('mouseover', mouseover2)
+              .on('mousemove', mousemove2)
             
-            updateMap(name, dats);
+            updateLegend(topSelected);
+            updateMap(topSelected, dats);
           } else {
             
             updateMap("all");
           }
         });
-      
-      
         
-      
-  
-      
-  
-    </script>
-    <footer style='width: 100%; background: red; position: relative; bottom: 0;'>
+        
+        
+        
+        
+        
+        
+      </script>
+      <footer style='width: 100%; background: red; position: relative; bottom: 0;'>
         <a style='color: white;' href='https://jeanwooha.me'>Portfolio</a>
         <a style='color: white;' href='https://linkedin.com/in/jeanha124'>LinkedIn</a>
         <a style='color: white;' href='https://github.com/jeanha124'>Github</a>
-    </footer>
-  </div>
-</body>
-</html>
-
-<!-- function ready([us, data]) {
-data.forEach(function (d) {
-let result = longlat.filter(function (lonlat) {
-return lonlat.name === d.province;
-});
-d.id = (result[0] !== undefined) ? result[0].id : null;
-d.long = (result[0] !== undefined) ? result[0].long : null;
-d.lat = (result[0] !== undefined) ? result[0].lat : null;
-});
-
-
-let quantityById = {};
-data.forEach(function (d) {
-if (d.id < 57 && d.id !==null) { if (quantityById[d.id]) { quantityById[d.id]++; } else { quantityById[d.id]=1; } } });
-  let updateAttr=(data)=> {
-  quantityById = {};
-  data.forEach(function (d) {
-  if (d.id < 57 && d.id !==null && d.id !==undefined) { if (quantityById[d.id]) { quantityById[d.id]++; } else {
-    quantityById[d.id]=1; } } }); d3.selectAll('.states') .data(topojson.feature(us, us.objects.states).features)
-    .enter().append("path") .attr("d", path) .style('fill', function (d) { if (quantityById[d.id] !==undefined){ return
-    color(quantityById[d.id]) } }); } let tooltip=d3.select('#map') .append('div') .style('opacity', 0.5)
-    .attr('class', 'tooltip' ) .style('background-color', 'lightgrey' ) .style('width', '150px' ) .style('border',
-    'solid' ) .style('border-width', '2px' ) .style('border-radius', '5px' ) .style('position', 'absolute' )
-    .style('padding', '5px' ) let mouseover=function (d) { tooltip.style('opacity', 1) d3.select(this) .style('stroke',
-    'grey' ) .style('opacity', 1) } let mousemove=function (d) { if (quantityById[d.id]===undefined) {
-    tooltip.html('There is no wine here in
-    ' + d.properties.name)
-          } else if (quantityById[d.id] === 1) {
-            tooltip.html(' There is
-    ' + quantityById[d.id] + ' type of wine here in
-    ' + d.properties.name)
-          } else {
-            tooltip.html(' There are ' + quantityById[d.id] + ' types of
-    wine here in ' + d.properties.name)
-              .style(' left', (d3.mouse(this)[0] - 34) + 'px' ) .style('top',
-    (d3.mouse(this)[1] - 12) + 'px' ) } } let mouseleave=function(d) { tooltip.style('opacity', 0) d3.select(this)
-    .style('stroke', 'black' ) .style('opacity', 1) } let wineInfo=d3.select('.wine-info') .style('opacity', 0.5)
-    .style('width', '550px' ) .style('background-color', 'lightblue' ) .style('border', 'solid' )
-    .style('border-width', '2px' ) .style('border-radius', '5px' ) .style('padding', '5px' ) .style('white-space',
-    'pre-wrap' ) let winehover=d3.select('#info') .append('div') .style('opacity', 0.5) .attr('class', 'winefo' )
-    .style('background-color', 'white' ) .style('width', '500px' ) .style('border', 'solid' ) .style('border-width',
-    '2px' ) .style('border-radius', '5px' ) .style('padding', '5px' ) .style('white-space', 'pre-wrap' ) let mouseover2=function(d)
-    { winehover.style('opactiy', 1) d3.select(this) .style('stroke', 'green' ) .style('opactiy', 1) } let mousemove2=function
-    (d, i) { winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n'
-    + '<b>Wine Variety:</b> ' +
-    d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
-    }
-    let mouseleave2 = function (d) {
-    winehover.style('opacity', 0)
-    d3.select(this)
-    .style('stroke', 'black')
-    .style('opacity', 1)
-    }
-    svg.append('g')
-    .attr('class', 'states')
-    .selectAll("path")
-    .data(topojson.feature(us, us.objects.states).features)
-    .enter().append("path")
-    .attr("d", path)
-    .attr('fill', function (d) {
-    return color(quantityById[d.id]);
-    })
-    .on('mouseover', mouseover)
-    .on('mousemove', mousemove)
-    .on('mouseleave', mouseleave)
-
-
-
-    d3.select('select')
-    .on('change', function (d, i) {
-    let topSelected = d3.select('#top-wine-selector option:checked').node().value;
-    let expensed = d3.select('#expense-wine-selector option:checked').node().value;
-    if (topSelected) {
-    let dats = getTop(topSelected, data, expensed);
-    updateAttr(dats)
-    d3.select('.wine-info')
-    .selectAll('#info')
-    .data(dats)
-    .enter().append('div')
-    .text(function(d){ return d.title})
-    .on('mouseover', mouseover2)
-    .on('mousemove', mousemove2)
-    }
-
-
+      </footer>
+    </div>
+  </body>
+  </html>
+  
+  <!-- function ready([us, data]) {
+    data.forEach(function (d) {
+      let result = longlat.filter(function (lonlat) {
+        return lonlat.name === d.province;
+      });
+      d.id = (result[0] !== undefined) ? result[0].id : null;
+      d.long = (result[0] !== undefined) ? result[0].long : null;
+      d.lat = (result[0] !== undefined) ? result[0].lat : null;
     });
-
-
-    d3.select('button').on('click', function () {
-    d3.select('.wine-info').selectAll('div').remove();
-    })
-
-
-
-
-    } -->
-
-    <!-- function updateLegend(selectedVal) {
-    let color = d3.scaleThreshold()
-    .domain(colorCodes[selectedVal].keys)
-    .range(colorCodes[selectedVal].values);
     
-    legend.append('g')
-    .attr('class', 'legendTip')
-    .attr('transform', 'translate(20, 20)');
     
-    let colorLegend = d3.legendColor()
-    .shapePadding(10)
-    .shapeWidth(30)
-    .shapeHeight(10)
-    .orient('vertical')
-    .scale(color)
-    .labels(colorCodes[selectedVal].labels)
-    .title(colorCodes[selectedVal].title);
-    
-    legend.select('.colorLegend').call(colorLegend);
-    
-    legend.exit().remove();
-    }
-    updateLegend("all"); -->
+    let quantityById = {};
+    data.forEach(function (d) {
+      if (d.id < 57 && d.id !==null) { if (quantityById[d.id]) { quantityById[d.id]++; } else { quantityById[d.id]=1; } } });
+      let updateAttr=(data)=> {
+        quantityById = {};
+        data.forEach(function (d) {
+          if (d.id < 57 && d.id !==null && d.id !==undefined) { if (quantityById[d.id]) { quantityById[d.id]++; } else {
+            quantityById[d.id]=1; } } }); d3.selectAll('.states') .data(topojson.feature(us, us.objects.states).features)
+            .enter().append("path") .attr("d", path) .style('fill', function (d) { if (quantityById[d.id] !==undefined){ return
+              color(quantityById[d.id]) } }); } let tooltip=d3.select('#map') .append('div') .style('opacity', 0.5)
+              .attr('class', 'tooltip' ) .style('background-color', 'lightgrey' ) .style('width', '150px' ) .style('border',
+              'solid' ) .style('border-width', '2px' ) .style('border-radius', '5px' ) .style('position', 'absolute' )
+              .style('padding', '5px' ) let mouseover=function (d) { tooltip.style('opacity', 1) d3.select(this) .style('stroke',
+              'grey' ) .style('opacity', 1) } let mousemove=function (d) { if (quantityById[d.id]===undefined) {
+                tooltip.html('There is no wine here in
+                ' + d.properties.name)
+              } else if (quantityById[d.id] === 1) {
+                tooltip.html(' There is
+                ' + quantityById[d.id] + ' type of wine here in
+                ' + d.properties.name)
+              } else {
+                tooltip.html(' There are ' + quantityById[d.id] + ' types of
+                wine here in ' + d.properties.name)
+                .style(' left', (d3.mouse(this)[0] - 34) + 'px' ) .style('top',
+                (d3.mouse(this)[1] - 12) + 'px' ) } } let mouseleave=function(d) { tooltip.style('opacity', 0) d3.select(this)
+                .style('stroke', 'black' ) .style('opacity', 1) } let wineInfo=d3.select('.wine-info') .style('opacity', 0.5)
+                .style('width', '550px' ) .style('background-color', 'lightblue' ) .style('border', 'solid' )
+                .style('border-width', '2px' ) .style('border-radius', '5px' ) .style('padding', '5px' ) .style('white-space',
+                'pre-wrap' ) let winehover=d3.select('#info') .append('div') .style('opacity', 0.5) .attr('class', 'winefo' )
+                .style('background-color', 'white' ) .style('width', '500px' ) .style('border', 'solid' ) .style('border-width',
+                '2px' ) .style('border-radius', '5px' ) .style('padding', '5px' ) .style('white-space', 'pre-wrap' ) let mouseover2=function(d)
+                { winehover.style('opactiy', 1) d3.select(this) .style('stroke', 'green' ) .style('opactiy', 1) } let mousemove2=function
+                (d, i) { winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n'
+                + '<b>Wine Variety:</b> ' +
+                d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
+              }
+              let mouseleave2 = function (d) {
+                winehover.style('opacity', 0)
+                d3.select(this)
+                .style('stroke', 'black')
+                .style('opacity', 1)
+              }
+              svg.append('g')
+              .attr('class', 'states')
+              .selectAll("path")
+              .data(topojson.feature(us, us.objects.states).features)
+              .enter().append("path")
+              .attr("d", path)
+              .attr('fill', function (d) {
+                return color(quantityById[d.id]);
+              })
+              .on('mouseover', mouseover)
+              .on('mousemove', mousemove)
+              .on('mouseleave', mouseleave)
+              
+              
+              
+              d3.select('select')
+              .on('change', function (d, i) {
+                let topSelected = d3.select('#top-wine-selector option:checked').node().value;
+                let expensed = d3.select('#expense-wine-selector option:checked').node().value;
+                if (topSelected) {
+                  let dats = getTop(topSelected, data, expensed);
+                  updateAttr(dats)
+                  d3.select('.wine-info')
+                  .selectAll('#info')
+                  .data(dats)
+                  .enter().append('div')
+                  .text(function(d){ return d.title})
+                  .on('mouseover', mouseover2)
+                  .on('mousemove', mousemove2)
+                }
+                
+                
+              });
+              
+              
+              d3.select('button').on('click', function () {
+                d3.select('.wine-info').selectAll('div').remove();
+              })
+              
+              
+              
+              
+            } -->
+            
+            
+            
+            
+            
+              
+              
+              
+              <!-- d3.select('.wine-info')
+              .selectAll('#info')
+              .data(dats)
+              .enter().append('div')
+              .text(function (d) { return d.title })
+              .on('mouseover', mouseover2)
+              .on('mousemove', mousemove2) -->
 
-    <!-- updateLegend("all"); -->
-<!-- 
-    let legend = d3.select('body').select('#legend')
-    .append('svg')
-    .attr('height', height - 100)
-    .attr('width', 200); -->
+
+
+              <!-- color scale 
+              let color = d3.scaleThreshold()
+              .domain(d3.range(0, 100))
+              .range(d3.schemePuBu[9]);
+              
+              let x = d3.scaleLinear()
+              .domain([0, 10, 25, 50, 100])
+              .rangeRound([600, 860]);
+              
+              let g = svg.append('g')
+              .attr('class', 'key')
+              .attr("transform", "translate(0,40)");
+              
+              g.selectAll('rect')
+              .data(color.range().map(function (d) {
+              d = color.invertExtent(d);
+              if (d[0] == null) d[0] = x.domain()[0];
+              if (d[1] == null) d[1] = x.domain()[1];
+              return d;
+              }))
+              .enter().append('rect')
+              .attr('height', 8)
+              .attr('x', function (d) { return x(d[0]);})
+              .attr('width', function (d) { return x(d[1]) - x(d[0]); })
+              .attr('fill', function(d) { return color(d[0]); });
+              
+              g.append('text')
+              .attr('class', 'sub')
+              .attr('x', x.range()[0])
+              .attr('y', -7)
+              .attr('fill', '#000')
+              .attr('text-anchor', 'start')
+              .attr('font-weight', 'bold')
+              .text('Quantity of Wine');
+              
+              g.call(d3.axisBottom(x)
+              .tickSize(12)
+              )
+              .select('.domain')
+              .remove();
+              
+              -->
