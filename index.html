@@ -14,6 +14,9 @@
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
   <style>
+    body {
+      color: white;
+    }
     header {
       text-align: center;
     }
@@ -34,7 +37,6 @@
       font: 20px;
       text-align: center;
     }
-
     .wine_info {
       border: 1px solid black;
       position: relative;
@@ -42,10 +44,38 @@
       top: 20px;
       width: 300px;
     }
+    .container {
+      background-image: url("winebarrel.jpeg");
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    #map {
+      position: absolute;
+      max-width: 80%;
+      top: 30%;
+      left: 10%;
+      border-radius: 3px;
+    }
+    #map:empty {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    @media screen and (orientation: portrait) {
+      #map {
+        max-width: 90%; 
+      }
+    }
+    @media screen and (orientation: landscape) {
+      #map {
+        max-width: 90%;
+      }
+    }
   </style>
 </head>
 <body>
-  <div style="position: relative;">
+  <div class='container' style="position: relative; min-height: 1000px; max-height: 100%;">
     <header><h1>Wine in the USA</h1></header>
     <div id="map" style="width: '900'; height: '600';"></div>
     <br>
@@ -63,9 +93,9 @@
       <button>Reset</button>
     </div>
     <div id="legend"></div>
-    <div style="display:flex;">
-      <div class='wine-info'></div>
-      <div id='info'></div>
+    <div style="display:flex; position: absolute; top: 80%;">
+      <div class='wine-info' style="color: black;"></div>
+      <div id='info' style="color: black;"></div>
     </div>
     <script>      
       const getTop = function(num, data, expense) {
@@ -347,8 +377,8 @@
   
       let svg = d3.select('body').select("#map")
       .append("svg")
-      .attr('width', 960)
-      .attr('height', 600)
+      .attr('width', 860)
+      .attr('height', 500)
       .style('float', 'left');
       
       let height = +svg.attr('height'), width = +svg.attr('width');    
@@ -358,7 +388,6 @@
           .append('svg')
           .attr('height', height - 100)
           .attr('width', 200);
-
           
       let mouseover2 = null, mousemove2 = null, mouseleave2 = null, wineinfo = null, winehover = null;
               
@@ -455,7 +484,6 @@
                 d.long = (result[0] !== undefined) ? result[0].long : null;
                 d.lat = (result[0] !== undefined) ? result[0].lat : null;
               });
-
               let quantityById = {};
               data.forEach(function (d) {
                 if (d.id < 57 && d.id !== null) {
@@ -482,7 +510,6 @@
                 })
                 .style('stroke', 'black')
                 .style('stroke-width', '2');
-
               //remove prev elements
               svg.exit().remove();
             });  
@@ -497,7 +524,6 @@
               d.long = (result[0] !== undefined) ? result[0].long : null;
               d.lat = (result[0] !== undefined) ? result[0].lat : null;
             });
-
             let quantityById = {};
             data.forEach(function (d) {
               if (d.id < 57 && d.id !== null) {
@@ -541,7 +567,6 @@
               d3.select(this)
                 .style('stroke', 'black').style('opacity', 1)
             }
-
             wineInfo = d3.select('.wine-info')
               .style('opacity', 0.5)
               .style('width', '550px')
@@ -562,7 +587,6 @@
               .style('border-radius', '5px')
               .style('padding', '5px')
               .style('white-space', 'pre-wrap')
-
             mouseover2 = function (d) { 
               winehover.style('opactiy', 1) 
               d3.select(this)
@@ -574,7 +598,6 @@
               winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n'+ '<b>Wine Variety:</b> ' +
               d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
               }
-
             mouseleave2 = function (d) {
               winehover.style('opacity', 0)
               d3.select(this)
@@ -598,22 +621,18 @@
               .on('mouseover', mouseover)
               .on('mousemove', mousemove)
               .on('mouseleave', mouseleave);
-
             //remove prev elements
             svg.exit().remove();
           }
         });
-
       }
       function updateLegend(selectedVal) {
           let color = d3.scaleThreshold()
             .domain(colorCodes[selectedVal].keys)
             .range(colorCodes[selectedVal].values);
-
           legend.append('g')
             .attr('class', 'legendTip')
             .attr('transform', 'translate(20, 20)');
-
           let colorLegend = d3.legendColor()
             .orient('vertical')
             .shapePadding(10)
@@ -621,10 +640,8 @@
             .shapeHeight(10)
             .scale(color)
             .labels(colorCodes[selectedVal].labels)
-            .title(colorCodes[selectedVal].title);
-
+            .title(colorCodes[selectedVal].title);   
           legend.select('.legendTip').call(colorLegend);
-
           legend.exit().remove();
         }
       
@@ -642,7 +659,6 @@
           let expensed = d3.select('#expense-wine-selector option:checked').node().value;
           if (topSelected !== 'all') {
             let dats = getTop(topSelected, outData, expensed);
-
             d3.select('.wine-info')
               .selectAll('#info')
               .data(dats)
@@ -666,7 +682,7 @@
         
         
       </script>
-      <footer style='width: 100%; background: red; position: relative; bottom: 0;'>
+      <footer style='width: 100%; background: red; position: absolute; bottom: 0;'>
         <a style='color: white;' href='https://jeanwooha.me'>Portfolio</a>
         <a style='color: white;' href='https://linkedin.com/in/jeanha124'>LinkedIn</a>
         <a style='color: white;' href='https://github.com/jeanha124'>Github</a>
