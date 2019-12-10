@@ -25,10 +25,6 @@
       stroke: black;
       stroke-width: 2px;
     }
-    .states :hover {
-      fill: #722f37;
-      cursor: pointer;
-    }
     .state-borders {
       fill: none;
       stroke-width: 1px;
@@ -425,43 +421,43 @@
         "all" : {
           "keys" : [1, 10, 100, 1000],
           "labels" : ["1-9", "10-99", "100-999", "1000+"],
-          "values" : ['#a84551', '#963e48', '#843640', '#722f37', '#60282e'],
+          "values" : ['#663b40', '#782932', '#91101f', '#9d0416'],
           "title" : "All Wine"
         },
         "5" : {
           "keys" : [1, 2, 3],
           "labels" : ["1", "2", "3"],
-          "values" : ['#a84551', '#963e48', '#843640', '#722f37'],
+          "values" : ['#663b40', '#782932', '#91101f'],
           "title" : "Top 5"
         },
         "10" : {
           "keys" : [1, 3, 5, 7],
           "labels" : ["1-2", "3-4", "5-6", "7+"],
-          "values" : ['#a84551', '#963e48', '#843640', '#722f37', '#60282e'],
+          "values" : ['#663b40', '#782932', '#91101f', '#9d0416'],
           "title" : "Top 10"
         },
         "15" : {
           "keys" : [1, 3, 6, 9],
           "labels" : ["1-2", "3-5", "6-8", "9+"],
-          "values" : ['#a84551', '#963e48', '#843640', '#722f37', '#60282e'],
+          "values" : ['#663b40', '#782932', '#91101f', '#9d0416'],
           "title" : "Top 15"
         },
         "20" : {
           "keys" : [1, 5, 10],
           "labels" : ["1-4", "5-9", "10+"],
-          "values" : ['#a84551', '#963e48', '#843640', '#722f37'],
+          "values" : ['#663b40', '#782932', '#91101f'],
           "title" : "Top 20"
         },
         "50" : {
           "keys": [1, 5, 10, 15],
           "labels": ["1-4", "5-9", "10-14", "15+"],
-          "values": ['#a84551', '#963e48', '#843640', '#722f37', '#60282e'],
+          "values": ['#663b40', '#782932', '#91101f', '#9d0416'],
           "title": "Top 50"
         },
         "100" : {
-          "keys": [1, 5, 20, 40, 60],
-          "labels": ["1-4", "5-19", "20-39", "40-59", "60+"],
-          "values": ['#a84551', '#963e48', '#843640', '#722f37', '#60282e', '#4e2026'],
+          "keys": [1, 5, 20, 50, 70],
+          "labels": ["1-4", "5-19", "20-49", "50-69", "70+"],
+          "values": ['#663b40', '#782932', '#91101f', '#9d0416', '#722f48'],
           "title": "Top 100"
         }
       }
@@ -638,14 +634,14 @@
           let colorLegend = d3.legendColor()
             .orient('vertical')
             .shapePadding(10)
-            .shapeWidth(15)
+            .shapeWidth(30)
             .shapeHeight(10)
             .scale(color)
             .labels(colorCodes[selectedVal].labels)
             .title(colorCodes[selectedVal].title);   
           legend.select('.legendTip').call(colorLegend)
           .style('stroke', 'white')
-          .style('stroke-width', '2');
+          .style('fill', 'white');
           legend.exit().remove();
         }
       
