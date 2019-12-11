@@ -41,9 +41,9 @@
       width: 300px;
     }
     .container {
-      background-image: url("winebarrel.jpeg");
+      background-image: url("corks.jpeg");
       background-position: center center;
-      background-repeat: no-repeat;
+      background-repeat: repeat-y;
       background-size: cover;
     }
     #map {
@@ -92,6 +92,7 @@
     <div style="display:flex; position: absolute; top: 80%;">
       <div class='wine-info' style="color: black;"></div>
       <div id='info' style="color: black;"></div>
+    </div>
     </div>
     <script>      
       const getTop = function(num, data, expense) {
@@ -682,7 +683,7 @@
         
         
       </script>
-      <footer style='width: 100%; background: red; position: absolute; bottom: 0;'>
+      <footer style='width: 100%; background: red; position: fixed; bottom: 0;'>
         <a style='color: white;' href='https://jeanwooha.me'>Portfolio</a>
         <a style='color: white;' href='https://linkedin.com/in/jeanha124'>LinkedIn</a>
         <a style='color: white;' href='https://github.com/jeanha124'>Github</a>
