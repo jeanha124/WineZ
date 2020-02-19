@@ -692,6 +692,7 @@
     </div> -->
   </body>
   <script>
+    //HTML SETUP
     d3
       .select('body')
       .append('div')
@@ -706,7 +707,26 @@
       .select('#container')
       .append('div')
       .attr('id', 'title')
-      .html("Wine in the USA");    
+      .html("Wine in the USA");
+
+    d3
+      .select('#container')
+      .append('div')
+      .attr('id', 'description')
+      .html('The types of wine produced in the USA that are good and high ranking between budget friendliness or top quality expensive');
+
+    d3
+      .select('#container')
+      .append('div')
+      .attr('id', 'legend');
+
+    //SVG
+
+    const svg = d3
+      .select('#container')
+      .append('svg')
+      .attr('height', 500)
+      .attr('width', 860);
   </script>
   </html>
   
