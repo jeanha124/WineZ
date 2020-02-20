@@ -734,6 +734,125 @@
       .select('#container')
       .append('div')
       .attr('id', 'wine_filters');
+
+    d3
+      .select('#wine_filters')
+      .append('span')
+      .html('Please select an expense and then the top choice');
+
+    d3
+      .select('#wine_filters')
+      .append('div')
+      .attr('id', 'top-wine-selector');
+
+    d3
+      .select('#top-wine-selector')
+      .append('span')
+      .html('Please select a top choice: ');
+
+    d3
+      .select('#wine_filters')
+      .append('div')
+      .attr('id', 'expense-wine-selector');
+
+    d3
+      .select('#expense-wine-selector')
+      .append('span')
+      .html('Please select an expense: ');
+
+    d3
+      .select('#wine_filters')
+      .append('button')
+      .html('Reset');    
+
+
+    const getTop = function (num, data, expense) {
+      if (expense === 'Expensive') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(b.price) - parseFloat(a.price));
+        });
+      } else if (expense === 'Budget') {
+        data.sort(function (a, b) {
+          return (parseFloat(b.points) - parseFloat(a.points)) && (parseFloat(a.price) - parseFloat(b.price));
+        });
+      } else {
+        data.sort(function (a, b) {
+          return parseFloat(b.points) - parseFloat(a.points);
+        });
+      }
+      return data.slice(0, num);
+    }
+
+
+
+    //data groups
+    const top_wine = ["all", "5", "10", "15", "20", "50", "100"],
+        expense = ["all", "Expensive", "Budget"];
+
+    d3
+      .select('#top-wine-selector')
+      .append('select')
+      .selectAll('myOptions')
+      .data(top_wine)
+      .enter()
+      .append('option')
+      .text(function (d) { return d })
+      .attr('value', function (d) { return d });
+
+    d3
+      .select('#expense-wine-selector')
+      .append('select')
+      .selectAll('myOptions')
+      .data(expense)
+      .enter()
+      .append('option')
+      .text(function (d) { return d })
+      .attr('value', function (d) { return d });
+
+    let colorCodes = {
+      "all": {
+        "keys": [1, 10, 100, 1000],
+        "labels": ["1-9", "10-99", "100-999", "1000+"],
+        "values": ['#663b40', '#782932', '#91101f', '#9d0416'],
+        "title": "All Wine"
+      },
+      "5": {
+        "keys": [1, 2, 3],
+        "labels": ["1", "2", "3"],
+        "values": ['#663b40', '#782932', '#91101f'],
+        "title": "Top 5"
+      },
+      "10": {
+        "keys": [1, 3, 5, 7],
+        "labels": ["1-2", "3-4", "5-6", "7+"],
+        "values": ['#663b40', '#782932', '#91101f', '#9d0416'],
+        "title": "Top 10"
+      },
+      "15": {
+        "keys": [1, 3, 6, 9],
+        "labels": ["1-2", "3-5", "6-8", "9+"],
+        "values": ['#663b40', '#782932', '#91101f', '#9d0416'],
+        "title": "Top 15"
+      },
+      "20": {
+        "keys": [1, 5, 10],
+        "labels": ["1-4", "5-9", "10+"],
+        "values": ['#663b40', '#782932', '#91101f'],
+        "title": "Top 20"
+      },
+      "50": {
+        "keys": [1, 5, 10, 15],
+        "labels": ["1-4", "5-9", "10-14", "15+"],
+        "values": ['#663b40', '#782932', '#91101f', '#9d0416'],
+        "title": "Top 50"
+      },
+      "100": {
+        "keys": [1, 5, 20, 50, 70],
+        "labels": ["1-4", "5-19", "20-49", "50-69", "70+"],
+        "values": ['#663b40', '#782932', '#91101f', '#9d0416', '#722f48'],
+        "title": "Top 100"
+      }
+    }
     //Longitude/Latitude for states
     const longlat = [{
         id: '01',
@@ -1036,19 +1155,19 @@
         d.lat = (res[0] !== undefined) ? res[0].lat : null;
       });
 
-      d3.select('#wine_filters')
-        .append('select')
-        .selectAll('myOptions')
-        .data(top_wine)
-        .enter()
-        .append('option')
-        .text(function (d) { return d })
-        .attr('value', function (d) { return d });
+      // d3.select('#wine_filters')
+      //   .append('select')
+      //   .selectAll('myOptions')
+      //   .data(top_wine)
+      //   .enter()
+      //   .append('option')
+      //   .text(function (d) { return d })
+      //   .attr('value', function (d) { return d });
 
       let varies = [];
       let winery = [];
       let varietys = {};
-      let res.forEach(d => {
+      data.forEach(d => {
         if (!winery[d.winery]) {
 
         }
