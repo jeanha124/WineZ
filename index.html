@@ -1139,75 +1139,166 @@
       .defer(d3.csv, DATA)
       .await(mapData);
 
-    function mapData(error, us, data) {
-      if (error) throw error;
+    
+      function mapData(error, us, data) {
+        if (error) throw error;
 
-      let color = d3.scaleLinear()
-        .domain([0, 5000])
-        .range(d3.schemeOrRd);
+        let color = d3
+          .scaleThreshold()
+          .domain([0, 5000])
+          .range(d3.schemeOrRd);
 
-      data.forEach(d => {
-        let res = longlat.filter(function (longLat) {
-          return longLat.name === d.province;
+        data.forEach(d => {
+          let res = longlat.filter(function (longLat) {
+            return longLat.name === d.province;
+          });
+          d.id = (res[0] !== undefined) ? res[0].id : null;
+          d.long = (res[0] !== undefined) ? res[0].long : null;
+          d.lat = (res[0] !== undefined) ? res[0].lat : null;
         });
-        d.id = (res[0] !== undefined) ? res[0].id : null;
-        d.long = (res[0] !== undefined) ? res[0].long : null;
-        d.lat = (res[0] !== undefined) ? res[0].lat : null;
-      });
 
-      // d3.select('#wine_filters')
-      //   .append('select')
-      //   .selectAll('myOptions')
-      //   .data(top_wine)
-      //   .enter()
-      //   .append('option')
-      //   .text(function (d) { return d })
-      //   .attr('value', function (d) { return d });
-
-      let varies = [];
-      let winery = [];
-      let varietys = {};
-      data.forEach(d => {
-        if (!winery[d.winery]) {
-
-        }
-      })
-      data.forEach(d => {
-        if (!varies.includes(d.variety)) {
-          varies.push(d.variety);
-        }
-        if (varietys[d.variety]) {
-          varietys[d.variety] += 1;
-        } else {
-          varietys[d.variety] = 1;
-        };
-      });
-      svg.append('g')
-        .attr('class', 'states')
-        .selectAll('path')
-        .data(topojson.feature(us, us.objects.states).features)
-        .enter().append("path")
-        .attr("d", path)
-        .attr('class', 'state')
-        .style('fill', function (d) {
-          // if (quantityById[d.id] !== undefined) {
-          //   return color(quantityById[d.id])
-          // } else {
-            return '#ffcccb'
-          // }
+        let wineryName = [],
+            wineryTotalWine = {}, 
+            wineVariety = [],
+            wineVarietyAmount = {};
+        data.filter(place => {
+          //each winery Name
+          if (!wineryName.includes(place.winery)){
+            wineryName.push(place.winery);
+          }
+          //types of wine per winery
+          if (wineryTotalWine[place.winery]) {
+            wineryTotalWine[place.winery]++;
+          } else {
+            wineryTotalWine[place.winery] = 1;
+          }
+          //wine variety
+          if (!wineVariety.includes(place.variety)){
+            wineVariety.push(place.variety);
+          }
+          //wine variety amount
+          if (wineVarietyAmount[place.variety]){
+            wineVarietyAmount[place.variety]++;
+          } else {
+            wineVarietyAmount[place.variety] = 1;
+          }
         })
-        .style('stroke', 'white')
-        .style('stroke-width', '2')
-        // let quantityById = {};
+        let wineryFilter = data.filter(place => place.winery === 'Rainstorm')
+        console.log(wineVarietyAmount, wineVariety, wineryTotalWine, wineryFilter, wineryName)
+        // let varies = [];
+        // let winery = [];
+        // let varietys = {};
         // data.forEach(d => {
-        //   if (d.id < 57 && d.id !== null) {
-        //     if (quantityById[d.id]) {
-        //       quantityById[d.id]++;
-        //     } else {
-        //       quantityById[d.id] = 1;
-        //     }
+        //   if (!winery[d.winery]) {
+
         //   }
+        // })
+        // data.forEach(d => {
+        //   if (!varies.includes(d.variety)) {
+        //     varies.push(d.variety);
+        //   }
+        //   if (varietys[d.variety]) {
+        //     varietys[d.variety] += 1;
+        //   } else {
+        //     varietys[d.variety] = 1;
+        //   };
         // });
+        let quantityById = {};
+        data.forEach(d => {
+          if (d.id < 57 && d.id !== null) {
+            if (quantityById[d.id]) {
+              quantityById[d.id]++;
+            } else {
+              quantityById[d.id] = 1;
+            }
+          }
+        });
+        svg.append('g')
+          .attr('class', 'states')
+          .selectAll('path')
+          .data(topojson.feature(us, us.objects.states).features)
+          .enter().append("path")
+          .attr("d", path)
+          .attr('class', 'state')
+          .style('fill', function (d) {
+            if (quantityById[d.id] !== undefined) {
+              return color(quantityById[d.id])
+            } else {
+              return '#ffcccb'
+            }
+          })
+          .style('stroke', 'white')
+          .style('stroke-width', '2')
+
+    
+
+        //   function updateMap(selectedVal, newData = null) {
+        // d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json", function (error, us) {
+        //   if (error) throw error;
+        //   let color = d3.scaleThreshold()
+        //     .domain(colorCodes[selectedVal].keys)
+        //     .range(colorCodes[selectedVal].values);
+
+        //   if (newData === null) {
+        //     d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", function (error, data) {
+        //       data.forEach(function (d) {
+        //         let result = longlat.filter(function (lonlat) {
+        //           return lonlat.name === d.province;
+        //         });
+        //         d.id = (result[0] !== undefined) ? result[0].id : null;
+        //         d.long = (result[0] !== undefined) ? result[0].long : null;
+        //         d.lat = (result[0] !== undefined) ? result[0].lat : null;
+        //       });
+        //       let quantityById = {};
+        //       data.forEach(function (d) {
+        //         if (d.id < 57 && d.id !== null) {
+        //           if (quantityById[d.id]) {
+        //             quantityById[d.id]++;
+        //           } else {
+        //             quantityById[d.id] = 1;
+        //           }
+        //         }
+        //       });
+
+        //       outData = data;
+        //       svg.append('g')
+        //         .attr('class', 'states')
+        //         .selectAll('path')
+        //         .data(topojson.feature(us, us.objects.states).features)
+        //         .enter().append("path")
+        //         .attr("d", path)
+        //         .attr('class', 'state')
+        //         .style('fill', function (d) {
+        //           if (quantityById[d.id] !== undefined) {
+        //             return color(quantityById[d.id])
+        //           }
+        //         })
+        //         .style('stroke', 'black')
+        //         .style('stroke-width', '2');
+        //       //remove prev elements
+        //       svg.exit().remove();
+        //     });
+        //   } else {
+        //     console.log(colorCodes[selectedVal])
+        //     data = newData;
+        //     data.forEach(function (d) {
+        //       let result = longlat.filter(function (lonlat) {
+        //         return lonlat.name === d.province;
+        //       });
+        //       d.id = (result[0] !== undefined) ? result[0].id : null;
+        //       d.long = (result[0] !== undefined) ? result[0].long : null;
+        //       d.lat = (result[0] !== undefined) ? result[0].lat : null;
+        //     });
+        //     let quantityById = {};
+        //     data.forEach(function (d) {
+        //       if (d.id < 57 && d.id !== null) {
+        //         if (quantityById[d.id]) {
+        //           quantityById[d.id]++;
+        //         } else {
+        //           quantityById[d.id] = 1;
+        //         }
+        //       }
+        //     });  
 
       
         
@@ -1240,7 +1331,7 @@
       // for (let i = Math.round(minVal + points); i <= maxVal; i += points) {
       //   pScale.push(i - 1);
       // }
-    console.log(varies, varietys);
+    // console.log(varies, varietys);
       console.log(data);
     }
 
