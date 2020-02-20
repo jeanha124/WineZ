@@ -14,6 +14,17 @@
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
   <style>
+    #title, #description {
+      text-align: center;
+    }
+    #title {
+      font-weight: 700;
+      font-size: 50px;
+    }
+    svg {
+      display: block;
+      margin: auto;
+    }
     /* body {
       color: white;
     }
@@ -71,7 +82,6 @@
   </style>
 </head>
 <body>
-
   <!-- <div class='container' style="position: relative; min-height: 1000px; max-height: 100%;">
     <header><h1>Wine in the USA</h1></header>
     <div id="map" style="width: '1000'; height: '600';"></div>
@@ -720,6 +730,10 @@
       .append('div')
       .attr('id', 'legend');
 
+    d3
+      .select('#container')
+      .append('div')
+      .attr('id', 'wine_filters');
     //Longitude/Latitude for states
     const longlat = [{
         id: '01',
@@ -984,8 +998,18 @@
       .select('#container')
       .append('svg')
       .attr('height', 500)
-      .attr('width', 860);
+      .attr('width', 860)
+      .style('background-color', 'royalblue');
+    
+    let width = +svg.attr('width'),
+        height = +svg.attr('height');
+    //map and projection
+    let projection = d3.geoAlbersUsa()
+      .translate([width / 2, height / 2])
+      .scale(1000)
 
+    //Path generator
+    let path = d3.geoPath().projection(projection) 
     //JSON and CSV Requests
     const STATES = 'https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json';
     const DATA = 'https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv';
@@ -999,6 +1023,10 @@
     function mapData(error, us, data) {
       if (error) throw error;
 
+      let color = d3.scaleLinear()
+        .domain([0, 5000])
+        .range(d3.schemeOrRd);
+
       data.forEach(d => {
         let res = longlat.filter(function (longLat) {
           return longLat.name === d.province;
@@ -1008,19 +1036,96 @@
         d.lat = (res[0] !== undefined) ? res[0].lat : null;
       });
 
-      let quantityById = {};
-      data.forEach(d => {
-        if (d.id < 57 && d.id !== null) {
-          if (quantityById[d.id]) {
-            quantityById[d.id]++; 
-          } else {
-            quantityById[d.id] = 1;
-          }
-        }
-      });
+      d3.select('#wine_filters')
+        .append('select')
+        .selectAll('myOptions')
+        .data(top_wine)
+        .enter()
+        .append('option')
+        .text(function (d) { return d })
+        .attr('value', function (d) { return d });
 
-      console.log(us, data, quantityById);
+      let varies = [];
+      let winery = [];
+      let varietys = {};
+      let res.forEach(d => {
+        if (!winery[d.winery]) {
+
+        }
+      })
+      data.forEach(d => {
+        if (!varies.includes(d.variety)) {
+          varies.push(d.variety);
+        }
+        if (varietys[d.variety]) {
+          varietys[d.variety] += 1;
+        } else {
+          varietys[d.variety] = 1;
+        };
+      });
+      svg.append('g')
+        .attr('class', 'states')
+        .selectAll('path')
+        .data(topojson.feature(us, us.objects.states).features)
+        .enter().append("path")
+        .attr("d", path)
+        .attr('class', 'state')
+        .style('fill', function (d) {
+          // if (quantityById[d.id] !== undefined) {
+          //   return color(quantityById[d.id])
+          // } else {
+            return '#ffcccb'
+          // }
+        })
+        .style('stroke', 'white')
+        .style('stroke-width', '2')
+        // let quantityById = {};
+        // data.forEach(d => {
+        //   if (d.id < 57 && d.id !== null) {
+        //     if (quantityById[d.id]) {
+        //       quantityById[d.id]++;
+        //     } else {
+        //       quantityById[d.id] = 1;
+        //     }
+        //   }
+        // });
+
+      
+        
+  
+      
+      // 
+
+      // let winer = {};
+      // data.forEach(d => {
+      //   if (winer[d.winery]){
+      //     winer[d.winery]++;
+      //   } else {
+      //     winer[d.winery] = 1;
+      //   }
+      // });
+
+      
+      
+      // console.log(winer);
+      // console.log(varies.length, varietys);
+      // let quantity = [];
+      // for (let i in quantityById) {
+      //   quantity.push(quantityById[i]);
+      // }
+      // let maxVal = d3.max(quantity);
+      // let minVal = d3.min(quantity);
+
+      // let points = Math.round((maxVal - minVal) / 50);
+      // let pScale = [];
+      // for (let i = Math.round(minVal + points); i <= maxVal; i += points) {
+      //   pScale.push(i - 1);
+      // }
+    console.log(varies, varietys);
+      console.log(data);
     }
+
+   
   </script>
   </html>
   
