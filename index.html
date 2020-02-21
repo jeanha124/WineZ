@@ -25,9 +25,13 @@
       display: block;
       margin: auto;
     }
-    /* body {
+    #legend {
+      float: left;
+    }
+    body {
       color: white;
-    } */
+    }
+
     header {
       text-align: center;
     }
@@ -44,41 +48,45 @@
       font: 20px;
       text-align: center;
     }
-    .wine_info {
+    #wine-info {
       border: 1px solid black;
-      position: relative;
+      color: black;
+      float: left;
       padding: 8px;
       top: 20px;
       width: 300px;
     }
-    .container {
+    #wine-description {
+      float: right;
+    }
+    #container {
       background-image: url("corks.jpeg");
       background-position: center center;
       background-repeat: repeat-y;
       background-size: cover;
     }
-    #map {
+    /* svg {
       position: absolute;
       max-width: 80%;
       top: 30%;
       left: 10%;
       border-radius: 3px;
-    }
-    #map:empty {
+    } */
+    /* svg:empty {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-    }
-    @media screen and (orientation: portrait) {
-      #map {
+    } */
+    /* @media screen and (orientation: portrait) {
+      svg {
         max-width: 90%; 
       }
     }
     @media screen and (orientation: landscape) {
-      #map {
+      svg {
         max-width: 90%;
       }
-    }
+    } */
   </style>
 </head>
 <body>
@@ -151,17 +159,22 @@
       .select('#container')
       .append('div')
       .attr('id', 'wine_filters');
-      
+       
     d3
       .select('#wine_filters')
       .append('span')
-      .html('View Wines according to ....');
-      
-    d3
-      .select('#wine_filters')
-      .append('span')
-      .html('Please select an expense then a choice');
+      .html('- - Please select an expense then a choice - -');
     
+    d3
+      .select('#wine_filters')
+      .append('div')
+      .attr('id', 'expense-wine-selector');
+
+    d3
+      .select('#expense-wine-selector')
+      .append('span')
+      .html('Please select an expense: ');
+      
     d3
       .select('#wine_filters')
       .append('div')
@@ -172,16 +185,6 @@
       .append('span')
       .html('Please select a top choice: ');
     
-    d3
-      .select('#wine_filters')
-      .append('div')
-      .attr('id', 'expense-wine-selector');
-    
-    d3
-      .select('#expense-wine-selector')
-      .append('span')
-      .html('Please select an expense: ');
-  
     d3
       .select('#wine_filters')
       .append('button')
@@ -200,7 +203,7 @@
     d3
       .select('#wine-box')
       .append('div')
-      .attr('id', 'description');
+      .attr('id', 'wine-description');
       
     
   
@@ -224,7 +227,7 @@
     const path = d3
       .geoPath()
       .projection(projection);
-       
+
     const getTop = function(num, data, expense) {
       if (expense === 'Expensive'){
         data.sort(function (a, b) {
@@ -242,7 +245,8 @@
       return data.slice(0, num);
     }
     let outData = null;
-    let longlat = [{
+    const longlat = [
+    {
       id: '01',
       name: 'Alabama',
       lat: 32.806671,
@@ -504,28 +508,30 @@
     
 
     //data groups
-      let top_wine = ["all", "5", "10", "15", "20", "50", "100"],
-        expense = ["all", "Expensive", "Budget"];
+    const top_wine = ["all", "5", "10", "15", "20", "50", "100"],
+          expense = ["all", "Expensive", "Budget"];
 
-      d3.select('#top-wine-selector')
-        .append('select')
-        .selectAll('myOptions')
-        .data(top_wine)
-        .enter()
-        .append('option')
-        .text(function (d) { return d })
-        .attr('value', function (d) { return d });
+    d3
+      .select('#top-wine-selector')
+      .append('select')
+      .selectAll('myOptions')
+      .data(top_wine)
+      .enter()
+      .append('option')
+      .text(d => d)
+      .attr('value', d => d);
       
-      d3.select('#expense-wine-selector')
-        .append('select')
-        .selectAll('myOptions')
-        .data(expense)
-        .enter()
-        .append('option')
-        .text(function (d) { return d })
-        .attr('value', function (d) { return d });
+    d3
+      .select('#expense-wine-selector')
+      .append('select')
+      .selectAll('myOptions')
+      .data(expense)
+      .enter()
+      .append('option')
+      .text(d => d)
+      .attr('value', d => d);
 
-    let colorCodes = {
+    const colorCodes = {
       "all" : {
         "keys" : [1, 10, 100, 1000],
         "labels" : ["1-9", "10-99", "100-999", "1000+"],
@@ -571,15 +577,15 @@
     }
   
     
-      function updateMap(selectedVal, newData = null) {
+    function updateMap(selectedVal, newData = null) {
       d3.json("https://raw.githubusercontent.com/jeanha124/WineZ/master/states.json", function(error, us) {
         if (error) throw error;
-          let color = d3.scaleThreshold()
+          const color = d3.scaleThreshold()
           .domain(colorCodes[selectedVal].keys)
           .range(colorCodes[selectedVal].values);
         
         if (newData === null) {
-          d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", function (error, data) {
+          d3.csv("https://raw.githubusercontent.com/jeanha124/WineZ/master/wine-data2.csv", function (data) {
             data.forEach(function (d) {
               let result = longlat.filter(function (lonlat) {
                 return lonlat.name === d.province;
@@ -612,7 +618,7 @@
                   return color(quantityById[d.id])
                 }
               })
-              .style('stroke', 'black')
+              .style('stroke', 'white')
               .style('stroke-width', '2');
             //remove prev elements
             svg.exit().remove();
@@ -639,8 +645,9 @@
             }
           });
           console.log(data, quantityById)
-          let tooltip = d3.select('body').select('#map')
-            .append('div').style('opacity', 0.5)
+          let tooltip = d3
+            .select('#container')
+            .append('div')
             .attr('class', 'tooltip')
             .style('background-color', 'lightgrey')
             .style('width', '150px')
@@ -671,26 +678,23 @@
             d3.select(this)
               .style('stroke', 'black').style('opacity', 1)
           }
-          wineInfo = d3.select('.wine-info')
-            .style('opacity', 0.5)
+          wineInfo = d3.select('#wine-info')
             .style('width', '550px')
             .style('background-color', 'lightblue')
             .style('border', 'solid')
             .style('border-width', '2px')
-            .style('border-radius', '5px')
             .style('padding', '5px')
             .style('white-space', 'pre-wrap')
-          winehover = d3.select('#info')
+          winehover = d3.select('#wine-description')
             .append('div')
-            .style('opacity', 0.5)
             .attr('class', 'winefo')
-            .style('background-color', 'white')
+            .style('background-color', 'black')
             .style('width', '500px')
             .style('border', 'solid')
             .style('border-width', '2px')
-            .style('border-radius', '5px')
             .style('padding', '5px')
             .style('white-space', 'pre-wrap')
+          
           mouseover2 = function (d) { 
             winehover.style('opactiy', 1) 
             d3.select(this)
@@ -722,7 +726,7 @@
                 return '#ffcccb'
               }
             })
-            .style('stroke', 'black')
+            .style('stroke', 'white')
             .style('stroke-width', '2')
             .on('mouseover', mouseover)
             .on('mousemove', mousemove)
@@ -733,7 +737,7 @@
       });
     }
     function updateLegend(selectedVal) {
-        let color = d3.scaleThreshold()
+        const color = d3.scaleThreshold()
           .domain(colorCodes[selectedVal].keys)
           .range(colorCodes[selectedVal].values);
         legend.append('g')
@@ -756,19 +760,19 @@
       updateLegend("all");
       updateMap("all");
     
-    d3.select('body').select('button').on('click', function () {
-      d3.select('.wine-info').selectAll('div').remove();
-      winehover.remove();
-    })
+    
     
     d3.select('#top-wine-selector')
       .on("change", function() {
         let topSelected = d3.select('#top-wine-selector option:checked').node().value;
         let expensed = d3.select('#expense-wine-selector option:checked').node().value;
-        if (topSelected !== 'all') {
+        // if (topSelected !== 'all') {
+        if (topSelected === 'all') {
+          updateMap('all');
+        }
           let dats = getTop(topSelected, outData, expensed);
-          d3.select('.wine-info')
-            .selectAll('#info')
+          d3.select('#wine-info')
+            .selectAll('#wine-description')
             .data(dats)
             .enter().append('div')
             .text(function (d) { return d.title })
@@ -777,13 +781,17 @@
           
           updateLegend(topSelected);
           updateMap(topSelected, dats);
-        } else {
+        // } else {
           
-          updateMap("all");
-        }
+        //   updateMap("all");
+        // }
       });
       
-      
+      d3.select('button').on('click', () => {
+          d3.select('#wine-info').selectAll('div').remove();
+          d3.select('#wine-description').selectAll('div').remove();
+          winehover.remove();
+        })
       
       
       
