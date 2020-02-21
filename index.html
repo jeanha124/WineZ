@@ -208,7 +208,7 @@
       .append('div')
       .attr('id', 'wine-description');
       
-    
+      
   
   
     let height = +svg.attr('height'), width = +svg.attr('width');    
@@ -740,23 +740,23 @@
             .style('padding', '5px')
             .style('white-space', 'pre-wrap')
           
-          mouseover2 = function (d) { 
-            winehover.style('opactiy', 1) 
-            d3.select(this)
-              .style('stroke', 'green')
-              .style('opactiy', 1) 
-          } 
+          // mouseover2 = function (d) { 
+          //   winehover.style('opactiy', 1) 
+          //   d3.select(this)
+          //     .style('stroke', 'green')
+          //     .style('opactiy', 1) 
+          // } 
           
           mousemove2 = function(d, i) {
             winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n'+ '<b>Wine Variety:</b> ' +
             d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
             }
-          mouseleave2 = function (d) {
-            winehover.style('opacity', 0)
-            d3.select(this)
-              .style('stroke', 'black')
-              .style('opacity', 1)
-          }
+          // mouseleave2 = function (d) {
+          //   winehover.style('opacity', 0)
+          //   d3.select(this)
+          //     .style('stroke', 'black')
+          //     .style('opacity', 1)
+          // }
 
           svg.append('g')
             .attr('class', 'states')
@@ -812,18 +812,18 @@
       .on("change", function() {
         let topSelected = d3.select('#top-wine-selector option:checked').node().value;
         let expensed = d3.select('#expense-wine-selector option:checked').node().value;
+        let dats = getTop(topSelected, outData, expensed);
         // if (topSelected !== 'all') {
         if (topSelected === 'all') {
           updateMap('all');
         }
-          let dats = getTop(topSelected, outData, expensed);
           d3.select('#wine-info')
             .selectAll('#wine-description')
             .data(dats)
             .enter().append('div')
             .text(function (d) { return d.title })
-            .on('mouseover', mouseover2)
-            .on('mousemove', mousemove2)
+            // .on('mouseover', mouseover2)
+            .on('mousemove', mousemove2);
           
           updateLegend(topSelected);
           updateMap(topSelected, dats);
