@@ -685,11 +685,6 @@
             .style('padding', '5px')
             .style('white-space', 'pre-wrap')
           
-          mousemove2 = function(d) {
-            winehover.html('<b>Wine Name:</b> ' + d.title + '\n' + '<b>Wine Description:</b> ' + d.description + '\n'+ '<b>Wine Variety:</b> ' +
-            d.variety + '\n' + '<b>Wine Quality:</b> ' + d.points + '%' + '\n' + '<b>Wine Price:</b> $' + d.price)
-            }
-
           svg.append('g')
             .attr('class', 'states')
             .selectAll('path')
