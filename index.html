@@ -809,11 +809,10 @@
     
     
     d3.select('#top-wine-selector')
-      .on("change", function() {
+      .on("change", () => {
         let topSelected = d3.select('#top-wine-selector option:checked').node().value;
         let expensed = d3.select('#expense-wine-selector option:checked').node().value;
         let dats = getTop(topSelected, outData, expensed);
-        // if (topSelected !== 'all') {
         if (topSelected === 'all') {
           updateMap('all');
         }
@@ -822,15 +821,10 @@
             .data(dats)
             .enter().append('div')
             .text(function (d) { return d.title })
-            // .on('mouseover', mouseover2)
             .on('mousemove', mousemove2);
           
           updateLegend(topSelected);
           updateMap(topSelected, dats);
-        // } else {
-          
-        //   updateMap("all");
-        // }
       });
       
       d3.select('button').on('click', () => {
